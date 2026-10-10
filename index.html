@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Absensi Relawan SPPG Karangduakk</title>
+<title>Absensi Karangduak</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mut:#6b7280;--bd:#e3e6ea;--pri:#2563eb;--H:#16a34a;--I:#d97706;--S:#7c3aed;--C:#0891b2;--A:#dc2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111418;--card:#1b2026;--tx:#eef0f3;--mut:#9aa3ad;--bd:#2c333b;--pri:#60a5fa;--H:#4ade80;--I:#fbbf24;--S:#a78bfa;--C:#22d3ee;--A:#f87171}}
@@ -158,6 +158,7 @@ const GR={L:"Asisten Lapangan",P:"Persiapan",M:"Masak",R:"Pemorsian",D:"Distribu
 const ST={H:"Hadir",I:"Izin",S:"Sakit",C:"Cuti (Ct)",A:"Alpa"};
 const API_URL="https://script.google.com/macros/s/AKfycbykeLcBM57FyfsoWEjZXwKav61cClTXI8Il-HHYr01G6JTJvc4vXCdWEEPbCRe0MSZSNg/exec";   // contoh: https://script.google.com/macros/s/AKfy.../exec
 const KK="absensi-kode";
+const KODE_TERTANAM="Karangduak2026Relawan"; // kode akses tertanam = langsung masuk tanpa login. Kosongkan ("") untuk memakai layar login.
 let db={people:[],records:{},coord:{},rate:null,rateK:null,rateL:null};
 let CODE="",ver=null,lastLoad=0,q=Promise.resolve(),pend=0,timer=null;
 const debounce=(f,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>f(...a),ms)}};
@@ -276,6 +277,7 @@ $("lo").onclick=()=>showLogin("");
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-lastLoad>20000)checkVer()});
 (async function boot(){
   if(API_URL.indexOf("ISI_")===0){showLogin("Belum dikonfigurasi: isi API_URL di bagian atas script file ini (lihat PANDUAN).");return}
+  if(KODE_TERTANAM){try{await tryLogin(KODE_TERTANAM,false);$("lo").style.display="none";return}catch(e){showLogin("Tidak dapat terhubung ke database: "+(e&&e.message||e));return}}
   let c="",rem=false;try{c=localStorage.getItem(KK)||"";rem=!!c;if(!c)c=sessionStorage.getItem(KK)||""}catch(e){}
   if(c){try{await tryLogin(c,rem);return}catch(e){const m=e&&e.message;showLogin(m==="KODE_SALAH"?"Kode akses sudah diganti. Masuk lagi.":"");return}}
   showLogin("");
