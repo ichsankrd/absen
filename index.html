@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Absensi Relawan SPPG Karangduak</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mut:#6b7280;--bd:#e3e6ea;--pri:#2563eb;--H:#16a34a;--I:#d97706;--S:#7c3aed;--C:#0891b2;--A:#dc2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111418;--card:#1b2026;--tx:#eef0f3;--mut:#9aa3ad;--bd:#2c333b;--pri:#60a5fa;--H:#4ade80;--I:#fbbf24;--S:#a78bfa;--C:#22d3ee;--A:#f87171}}
+:root[data-theme="dark"]{--bg:#111418;--card:#1b2026;--tx:#eef0f3;--mut:#9aa3ad;--bd:#2c333b;--pri:#60a5fa;--H:#4ade80;--I:#fbbf24;--S:#a78bfa;--C:#22d3ee;--A:#f87171}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px}
+header{text-align:center;font-size:12px;color:var(--mut);line-height:1.4}
+header b{display:block;color:var(--tx);font-size:13px}
+h1{font-size:17px;margin:12px 0;text-align:center}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select{padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;font-family:inherit}
+input.f{flex:1;min-width:120px}
+button{cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:8px 10px;font-size:13px}
+button.p{background:var(--pri);color:#fff;border-color:var(--pri)}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;text-align:center}
+.stats b{display:block;font-size:20px}.stats span{font-size:11px;color:var(--mut)}
+.p-row{display:grid;grid-template-columns:28px 1fr;gap:4px 8px;padding:10px 0;border-top:1px solid var(--bd)}
+.p-row:first-child{border-top:0}
+.no{color:var(--mut);font-size:13px;padding-top:2px}
+.nm{font-weight:600;font-size:14px}.nm small{display:block;font-weight:400;color:var(--mut);font-size:11px}
+.ctl{grid-column:2;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ctl label{font-size:11px;color:var(--mut);display:flex;align-items:center;gap:4px}
+.ctl input[type=time]{width:92px;padding:6px}
+.ctl select{padding:6px}
+.ctl button{padding:5px 8px}
+.s-H{border-color:var(--H)}.s-I{border-color:var(--I)}.s-S{border-color:var(--S)}.s-C{border-color:var(--C)}.s-A{border-color:var(--A)}
+.x{border:0;background:none;color:var(--mut);padding:0 4px}
+.gh{flex-wrap:wrap;align-items:center;gap:4px 8px;font-weight:700;font-size:13px;margin-top:10px;padding:6px 8px;background:var(--bg);border-radius:8px;display:flex;justify-content:space-between;break-after:avoid}.gh span{font-weight:400;color:var(--mut)}
+.sb.on{color:#fff;border-color:transparent}.sb.on.s-H{background:var(--H)}.sb.on.s-I{background:var(--I)}.sb.on.s-S{background:var(--S)}.sb.on.s-C{background:var(--C)}.sb.on.s-A{background:var(--A)}
+.ctl{gap:6px}
+.gs{padding:5px;font-size:12px;max-width:140px}
+.gh small{display:block;font-weight:400;color:var(--mut);font-size:11px}.gc{padding:5px;font-size:12px;max-width:170px}.kb{font-size:10px;background:var(--pri);color:#fff;border-radius:6px;padding:1px 6px;margin-left:6px;font-weight:500}
+.x{border:1px solid var(--bd);color:var(--tx);padding:5px 8px;border-radius:8px}
+#dlg,#edlg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);align-items:center;justify-content:center;z-index:9}
+.nm{display:flex;align-items:center;gap:10px;cursor:pointer}.cb{width:24px;height:24px;accent-color:var(--H);flex:none;cursor:pointer}
+.empty{color:var(--mut);text-align:center;padding:16px}
+.sign{display:none}
+@media print{
+ body{background:#fff;color:#000}.noprint{display:none!important}
+ .card{border:0;padding:0}.sign{display:block;margin-top:24px;font-size:12px}
+ .sign td{padding:6px 12px;height:40px}.x,.ctl button{display:none}
+ .p-row{break-inside:avoid;padding:4px 0}.sb:not(.on){display:none}.ctl .sb.on{display:inline-block;background:none!important;color:#000;border:0;padding:0;font-size:12px}
+}
+.rt{border-collapse:collapse;font-size:11px;width:100%}.rt th,.rt td{border:1px solid var(--bd);padding:3px 4px;text-align:center}.rt td.n{text-align:left;white-space:nowrap}.rt tr.g td{background:var(--bg);font-weight:700;text-align:left}.rt td.t{font-weight:700}
+@media print{.rt{font-size:8px}.rt th,.rt td{padding:1px 2px;border-color:#999}}
+/* ===== Panel pengaturan rekap ===== */
+.rk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+.fld{display:flex;flex-direction:column;gap:5px;min-width:0}
+.fld label{font-size:12px;color:var(--mut);font-weight:600;letter-spacing:.01em}
+.fld input{width:100%;min-height:42px;padding:9px 12px;font-weight:600;border-radius:10px}
+.fld input[inputmode]{text-align:right;font-variant-numeric:tabular-nums}
+.fld select{width:100%;min-height:42px;padding:9px 12px;font-weight:600;border-radius:10px}
+.fld select:focus,.fld input:focus{outline:2px solid var(--pri);outline-offset:0;border-color:transparent}
+.fld input:focus{outline:2px solid var(--pri);outline-offset:0;border-color:transparent}
+.rk-act{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--bd)}
+.rk-act button{min-height:40px;padding:8px 16px;border-radius:10px;font-weight:600}
+@media screen and (max-width:600px){
+ .rk-grid{grid-template-columns:1fr 1fr;gap:12px 10px}
+ .rk-grid .fld:first-child,.rk-grid .fld:last-child{grid-column:1/-1}
+ .rk-act button{flex:1}
+}
+/* ===== Responsif ===== */
+html{-webkit-text-size-adjust:100%}
+.rt td.n{position:sticky;left:0;background:var(--card);z-index:1}
+.rt tr.g td{position:static}
+#v2>.card:nth-child(2){-webkit-overflow-scrolling:touch}
+.rt{min-width:max-content}
+@media (min-width:900px){main{max-width:880px}}
+@media screen and (max-width:600px){
+ main{padding:10px}
+ h1{font-size:15px;margin:8px 0}
+ header{font-size:11px}
+ .card{padding:10px;border-radius:10px;margin-bottom:10px}
+ input,select{font-size:16px;min-height:40px}
+ button{min-height:40px;font-size:14px;padding:8px 12px}
+ .row{gap:6px}
+ .row>button#t1,.row>button#t2{flex:1}
+ /* tanggal */
+ #v1>.card.row:first-child{display:grid;grid-template-columns:auto 1fr auto;gap:6px}
+ #v1>.card.row:first-child label{grid-column:1/-1}
+ #d{width:100%;min-width:0}
+ #td{grid-column:1/2}
+ #prt{grid-column:2/4;margin-left:0!important}
+ /* statistik */
+ .stats{grid-template-columns:repeat(3,1fr);gap:8px 6px}
+ .stats b{font-size:22px}
+ /* pencarian & tambah */
+ input.f{flex:1 1 100%;min-width:0}
+ #gf,#allH,#add,#rst{flex:1 1 calc(50% - 6px)}
+ #add{flex:0 0 auto}
+ /* baris relawan */
+ .p-row{grid-template-columns:24px 1fr;padding:12px 0}
+ .nm{font-size:15px}
+ .ctl{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:4px}
+ .ctl .gs,.ctl .x{grid-column:1/-1;max-width:none;width:100%}
+ .ctl button.sb{padding:8px 2px;font-size:13px;min-width:0}
+ /* header kelompok */
+ .gh{display:grid;grid-template-columns:1fr auto;gap:6px 8px}
+ .gh .gc,.gh>button{grid-column:1/-1;max-width:none;width:100%}
+ /* rekap */
+ #v2>.card.row{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px}
+ #v2>.card.row label{grid-column:auto;font-size:12px}
+ #v2>.card.row input[type=month],#v2>.card.row input[type=text]{grid-column:1/-1;width:100%!important}
+ #v2>.card.row label{grid-column:1/-1;margin-top:2px}
+ #rp,#csv,#bk,#rs{margin-left:0!important}
+ #v2>.card.row:last-child span{grid-column:1/-1}
+ .rt{font-size:11px}
+ .rt th,.rt td{padding:4px 5px}
+ #rt h2{font-size:13px!important}
+ #dlg>.card,#edlg>.card{margin:12px}
+}
+@media screen and (max-width:360px){
+ .ctl button.sb{font-size:12px}
+ .stats b{font-size:20px}
+}
+@media print{.rt td.n{position:static}.rt{min-width:0}}
+</style>
+</head>
+<body>
+<main>
+<header><b>SATUAN PELAYANAN PEMENUHAN GIZI<br>KARANGDUAK KABUPATEN SUMENEP</b>YAYASAN ABINAYA DHAKARA Indonesia</header>
+<h1>ABSENSI RELAWAN SPPG KARANGDUAK</h1>
+<div id="login" style="display:none"><div class="card" style="max-width:360px;margin:24px auto"><p style="margin-top:0;font-weight:600;text-align:center">Masuk Admin</p><div class="fld"><label for="lp">Kode akses</label><input id="lp" type="password" autocomplete="current-password"></div><label style="display:flex;gap:8px;align-items:center;font-size:13px;margin-top:10px;color:var(--mut)"><input type="checkbox" id="lr" style="min-height:0"> Ingat di perangkat ini</label><button id="lg" class="p" style="width:100%;margin-top:14px">Masuk</button><p id="lm" style="color:var(--A);font-size:13px;text-align:center;margin:10px 0 0"></p></div></div>
+<div id="app" style="display:none">
+<div class="card row noprint" style="justify-content:space-between;font-size:12px;color:var(--mut);padding:8px 12px"><span id="who"></span><span id="sst"></span><button id="lo" style="min-height:0;padding:4px 10px">Keluar</button></div>
+<div class="card row noprint"><button id="t1" class="p">✅ Absensi</button><button id="t2">📊 Rekap</button></div>
+<div id="v1">
+<div class="card row noprint"><label for="d" style="color:var(--mut)">Tanggal</label><button id="pv" title="Hari sebelumnya">◀</button><input type="date" id="d"><button id="nx" title="Hari berikutnya">▶</button><button id="td">Hari ini</button><button id="prt" class="p" style="margin-left:auto">🖨 Cetak</button></div>
+<div id="dl" style="text-align:center;font-size:13px;font-weight:600;margin:-4px 0 12px"></div>
+<div class="card stats" id="stats"></div>
+<div class="card">
+<div class="row noprint" style="margin-bottom:8px"><input class="f" id="q" placeholder="Cari nama relawan"><select id="gf"></select><button id="allH">Semua hadir</button></div>
+<div id="list"></div>
+<div class="row noprint" style="margin-top:10px;border-top:1px solid var(--bd);padding-top:10px"><input class="f" id="n" placeholder="Nama relawan baru"><button id="add">Tambah</button><button id="rst">Reset hari ini</button></div>
+</div>
+</div>
+<div id="v2" style="display:none">
+<div class="card noprint"><div class="rk-grid"><div class="fld"><label for="rm">📅 Bulan (pilih cepat)</label><input type="month" id="rm"></div><div class="fld"><label for="rf1">Dari tanggal</label><input type="date" id="rf1"></div><div class="fld"><label for="rf2">Sampai tanggal</label><input type="date" id="rf2"></div><div class="fld"><label for="rr">Gaji anggota / hari</label><input type="text" inputmode="numeric" id="rr"></div><div class="fld"><label for="rk">Gaji koordinator / hari</label><input type="text" inputmode="numeric" id="rk"></div><div class="fld"><label for="rl">Gaji Asisten Lapangan / hari</label><input type="text" inputmode="numeric" id="rl"></div></div><div class="rk-act"><button id="csv">⬇ Unduh CSV</button><button id="rp" class="p">🖨 Cetak Rekap</button></div></div>
+<div class="card" style="overflow-x:auto"><div id="rt"></div></div>
+<div class="card row noprint"><span style="font-size:12px;color:var(--mut);flex:1;min-width:160px">Data tersimpan di Google Sheets dan dipakai bersama semua admin. Backup berkala tetap disarankan. Pulihkan juga dipakai untuk memindahkan data dari versi lama.</span><button id="bk">💾 Backup</button><button id="rs">📂 Pulihkan</button><input type="file" id="rf" accept=".json,application/json" hidden></div>
+</div>
+<div id="dlg" class="noprint"><div class="card" style="max-width:320px;margin:16px"><p id="dm" style="margin-top:0"></p><div class="row" style="justify-content:flex-end"><button id="dn">Batal</button><button id="dy" class="p" style="background:var(--A);border-color:var(--A)">Ya, lanjutkan</button></div></div></div>
+<div id="edlg" class="noprint"><div class="card" style="max-width:320px;width:100%;margin:16px"><p style="margin-top:0;font-weight:600">Edit nama relawan</p><input id="en" style="width:100%;margin-bottom:10px"><div class="row" style="justify-content:flex-end"><button id="ec">Batal</button><button id="es" class="p">Simpan</button></div></div></div>
+<table class="sign" id="sign"></table>
+</div>
+</main>
+<script>
+const GR={L:"Asisten Lapangan",P:"Persiapan",M:"Masak",R:"Pemorsian",D:"Distribusi",O:"Cuci Ompreng",K:"Kebersihan / Keamanan","":"Belum dikelompokkan"};
+const ST={H:"Hadir",I:"Izin",S:"Sakit",C:"Cuti (Ct)",A:"Alpa"};
+const API_URL="ISI_URL_WEB_APP";   // contoh: https://script.google.com/macros/s/AKfy.../exec
+const KK="absensi-kode";
+let db={people:[],records:{},coord:{},rate:null,rateK:null,rateL:null};
+let CODE="",ver=null,lastLoad=0,q=Promise.resolve(),pend=0,timer=null;
+const debounce=(f,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>f(...a),ms)}};
+function setSt(t,c){const e=document.getElementById("sst");if(e){e.textContent=t;e.style.color=c||"var(--mut)"}}
+function toast(m){let t=document.getElementById("toast");if(!t){t=document.createElement("div");t.id="toast";t.className="noprint";t.style.cssText="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:#b91c1c;color:#fff;padding:10px 14px;border-radius:10px;font-size:13px;z-index:20;max-width:90%;display:none";document.body.appendChild(t)}t.textContent=m;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>{t.style.display="none"},6000)}
+async function api(body){const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),45000);try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({code:CODE},body)),signal:ctl.signal});const j=await r.json();if(!j.ok)throw new Error(j.error||"Gagal");return j}finally{clearTimeout(t)}}
+function applyPeople(pp){db.people=pp.map(p=>({id:String(p.id),name:p.name,g:p.g||""}))}
+function applySettings(S){db.rate=S.rate==null?null:+S.rate;db.rateK=S.rateK==null?null:+S.rateK;db.rateL=S.rateL==null?null:+S.rateL;db.coord=S.coord||{};delete db.coord.K}
+async function loadAll(){const j=await api({action:"load"});applyPeople(j.people);applySettings(j.settings||{});db.records={};j.records.forEach(r=>{(db.records[r[0]]=db.records[r[0]]||{})[r[1]]={s:r[2]}});ver=j.ver;lastLoad=Date.now()}
+function onErr(e){const m=e&&e.message||String(e);if(m==="KODE_SALAH"||m==="TERKUNCI"){showLogin(m==="KODE_SALAH"?"Kode akses salah atau sudah diganti. Silakan masuk lagi.":"Terlalu banyak percobaan salah. Coba lagi 10 menit lagi.");return}toast("Gagal menyimpan: "+m);setSt("Gagal menyimpan","var(--A)");loadAll().then(refresh).catch(()=>{})}
+function run(body){pend++;setSt("Menyimpan…");q=q.then(async()=>{try{const j=await api(body);if(ver!=null&&j.ver!==ver+1){ver=j.ver;await loadAll();refresh()}else ver=j.ver;setSt("Tersimpan ✓")}catch(e){onErr(e)}finally{pend--}})}
+const setS=(k,v)=>run({action:"setSetting",key:k,value:v});
+const saveRate=(()=>{const t={};return k=>{clearTimeout(t[k]);t[k]=setTimeout(()=>setS(k,db[k]),600)}})();
+const refresh=debounce(()=>{render();if(view===2)rekap()},150);
+async function checkVer(){if(document.hidden||pend||!CODE||$("app").style.display==="none")return;try{const j=await api({action:"version"});if(j.ver!==ver){await loadAll();refresh()}}catch(e){const m=e&&e.message;if(m==="KODE_SALAH"||m==="TERKUNCI")onErr(e)}}
+const startPoll=()=>{if(!timer)timer=setInterval(checkVer,30000)};
+let cb=null,eid=null;
+const $=id=>document.getElementById(id);
+function ask(m,f){$("dm").textContent=m;cb=f;$("dlg").style.display="flex"}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const now=()=>{const t=new Date();return String(t.getHours()).padStart(2,"0")+":"+String(t.getMinutes()).padStart(2,"0")};
+const todayStr=()=>{const t=new Date();return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0")};
+let auto=todayStr();$("d").value=auto;
+const shift=n=>{const [y,m,d]=$("d").value.split("-").map(Number);const t=new Date(y,m-1,d+n);$("d").value=t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");render()};
+const checkDay=()=>{const t=todayStr();if(t!==auto){const follow=$("d").value===auto;auto=t;if(follow){$("d").value=t;render()}}};
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkDay()});window.addEventListener("focus",checkDay);setInterval(checkDay,60000);
+const rec=()=>(db.records[$("d").value]=db.records[$("d").value]||{});
+function render(){
+  if(!$("d").value)$("d").value=todayStr();
+  const d=$("d").value,R=db.records[d]||{},q=$("q").value.toLowerCase();
+  {const [yy,mm,dd]=d.split("-").map(Number);$("dl").textContent=new Date(yy,mm-1,dd).toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+(d===todayStr()?" (hari ini)":"")}
+  const c={H:0,I:0,S:0,C:0,A:0};db.people.forEach(p=>{const s=(R[p.id]||{}).s;if(s)c[s]++});
+  const belum=db.people.length-Object.values(c).reduce((a,b)=>a+b,0);
+  $("stats").innerHTML=Object.keys(ST).map(k=>`<div><b style="color:var(--${k})">${c[k]}</b><span>${ST[k].split(" ")[0]}</span></div>`).join("")+`<div><b>${belum}</b><span>Belum</span></div>`;
+  const gf=$("gf").value||"*";
+  const rowH=(p,i)=>{const r=R[p.id]||{};return `<div class="p-row"><div class="no">${i+1}</div><label class="nm"><input type="checkbox" class="cb" data-ck="1" data-id="${p.id}"${r.s==="H"?" checked":""}><span>${esc(p.name)}${p.g&&p.g!=="K"&&(db.coord||{})[p.g]===p.id?'<span class="kb">Koordinator</span>':''}</span></label><div class="ctl"><select class="noprint gs" data-id="${p.id}" data-k="g" title="Ubah kelompok">${Object.keys(GR).map(k=>`<option value="${k}"${(p.g||"")===k?" selected":""}>${k?GR[k]:"Tanpa kelompok"}</option>`).join("")}</select>${Object.keys(ST).map(k=>`<button class="sb${r.s===k?" on s-"+k:""}" data-id="${p.id}" data-s="${k}">${ST[k].split(" ")[0]}</button>`).join("")}<button class="x noprint" data-edit="${p.id}" title="Edit nama">✏️ Edit nama</button></div></div>`};
+  const out=Object.keys(GR).map(g=>{if(gf!=="*"&&gf!==g)return"";const m=db.people.map((p,i)=>[p,i]).filter(([p])=>(p.g||"")===g&&(!q||p.name.toLowerCase().includes(q)||p.id.includes(q))).sort((a,b)=>(b[0].id===(db.coord||{})[g])-(a[0].id===(db.coord||{})[g]));if(!m.length)return"";const h=m.filter(([p])=>(R[p.id]||{}).s==="H").length;const all=db.people.filter(x=>(x.g||"")===g);const cp=all.find(x=>x.id===(db.coord||{})[g]);const sel=g&&g!=="K"?`<select class="noprint gc" data-gc="${g}" title="Pilih koordinator"><option value="">Pilih koordinator…</option>${all.map(x=>`<option value="${x.id}"${cp&&cp.id===x.id?" selected":""}>${esc(x.name)}</option>`).join("")}</select>`:"";return `<div class="gh"><div>${GR[g]}${g&&g!=="K"?`<small>Koordinator: ${cp?esc(cp.name):"belum dipilih"}</small>`:""}</div><span>${h}/${m.length} hadir</span>${sel}${g?'<button class="noprint" data-gall="'+g+'">☑ Semua hadir</button>':""}</div>`+m.map(([p],j)=>rowH(p,j)).join("")}).join("");
+  $("list").innerHTML=out||'<div class="empty">Tidak ada relawan.</div>';
+  $("sign").innerHTML=`<tr><td>Mengetahui:<br>Koordinator Persiapan, Masak, Pemorsian, Distribusi, dan Cuci Ompreng</td><td>Menyetujui:<br>Asisten Lapangan</td><td>Kepala SPPG</td></tr>`;
+}
+function setv(id,k,v){const d=$("d").value,r=rec();r[id]=r[id]||{};if(v)r[id][k]=v;else delete r[id][k];const s=r[id].s;if(!s)delete r[id];render();run({action:"setStatus",rows:[{date:d,id:id,status:s||""}]})}
+$("list").onchange=e=>{const t=e.target;if(t.dataset.ck){setv(t.dataset.id,"s",t.checked?"H":"");return}if(t.dataset.gc){db.coord=db.coord||{};if(t.value)db.coord[t.dataset.gc]=t.value;else delete db.coord[t.dataset.gc];render();setS("coord",db.coord);return}if(t.dataset.k==="g"){const p=db.people.find(x=>x.id===t.dataset.id);if(p){const wasC=db.coord&&db.coord[p.g]===p.id;if(wasC)delete db.coord[p.g];p.g=t.value;render();run({action:"updatePerson",id:p.id,g:p.g});if(wasC)setS("coord",db.coord)}}else if(t.dataset.k)setv(t.dataset.id,t.dataset.k,t.value)};
+$("list").onclick=e=>{const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.gall){const r=rec(),d=$("d").value,rows=[];db.people.filter(p=>(p.g||"")===b.dataset.gall).forEach(p=>{r[p.id]=r[p.id]||{};if(!r[p.id].s){r[p.id].s="H";rows.push({date:d,id:p.id,status:"H"})}});render();if(rows.length)run({action:"setStatus",rows});return}
+  if(b.dataset.s){const cur=(rec()[b.dataset.id]||{}).s;setv(b.dataset.id,"s",cur===b.dataset.s?"":b.dataset.s)}else if(b.dataset.now)setv(b.dataset.id,b.dataset.now,now());
+  else if(b.dataset.edit){const pp=db.people.find(x=>x.id===b.dataset.edit);if(pp){eid=pp.id;$("en").value=pp.name;$("edlg").style.display="flex";$("en").focus()}}};
+$("gf").innerHTML='<option value="*">Semua kelompok</option>'+Object.keys(GR).map(k=>`<option value="${k}">${GR[k]}</option>`).join("");$("gf").onchange=render;
+$("q").oninput=render;$("d").onchange=render;
+$("pv").onclick=()=>shift(-1);$("nx").onclick=()=>shift(1);$("td").onclick=()=>{$("d").value=todayStr();render()};
+$("allH").onclick=()=>ask("Tandai semua relawan yang belum diisi sebagai Hadir?",()=>{const r=rec(),d=$("d").value,rows=[];db.people.forEach(p=>{r[p.id]=r[p.id]||{};if(!r[p.id].s){r[p.id].s="H";rows.push({date:d,id:p.id,status:"H"})}});render();if(rows.length)run({action:"setStatus",rows})});
+$("add").onclick=()=>{const v=$("n").value.trim();if(!v)return;const last=db.people.reduce((m,p)=>Math.max(m,+p.id||0),202510000);const np={id:String(last+1),name:v,g:$("gf").value==="*"?"":$("gf").value};db.people.push(np);$("n").value="";render();run({action:"addPerson",id:np.id,name:np.name,g:np.g})};
+$("rst").onclick=()=>ask("Hapus semua isian absensi pada tanggal ini?",()=>{const d=$("d").value;delete db.records[d];render();run({action:"clearDay",date:d})});
+$("prt").onclick=()=>{try{window.print()}catch(e){}};
+$("dn").onclick=()=>{$("dlg").style.display="none"};
+$("dy").onclick=()=>{$("dlg").style.display="none";const f=cb;cb=null;if(f)f()};
+$("ec").onclick=()=>{$("edlg").style.display="none"};
+$("es").onclick=()=>{const v=$("en").value.trim(),p=db.people.find(x=>x.id===eid);if(v&&p){p.name=v;run({action:"updatePerson",id:p.id,name:v})}$("edlg").style.display="none";render()};
+$("en").onkeydown=e=>{if(e.key==="Enter")$("es").click()};
+const fmtIn=v=>"Rp "+Number(v).toLocaleString("id-ID");
+const num=s=>+String(s).replace(/\D/g,"")||0;
+const rupInput=el=>{const s=el.value.replace(/\D/g,"");el.value=s?fmtIn(+s):"";return +s||0};
+let view=1;const pad=n=>String(n).padStart(2,"0");
+const dlf=(name,txt,type)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove()};
+function setRange(ym){const [y,m]=ym.split("-").map(Number);$("rf1").value=ym+"-01";$("rf2").value=ym+"-"+pad(new Date(y,m,0).getDate())}
+function rekapData(){
+  if(!$("rm").value)$("rm").value=$("d").value.slice(0,7);
+  if(!$("rf1").value||!$("rf2").value)setRange($("rm").value);
+  let a=$("rf1").value,b=$("rf2").value;if(a>b){const t=a;a=b;b=t}
+  const days=[];{const [y0,m0,d0]=a.split("-").map(Number),[y1,m1,d1]=b.split("-").map(Number),end=new Date(y1,m1-1,d1);for(let t=new Date(y0,m0-1,d0);t<=end&&days.length<93;t.setDate(t.getDate()+1))days.push(t.getFullYear()+"-"+pad(t.getMonth()+1)+"-"+pad(t.getDate()))}
+  const [y,m]=a.split("-").map(Number),nd=days.length;
+  const full=a.slice(8)==="01"&&b.slice(0,7)===a.slice(0,7)&&+b.slice(8)===new Date(y,m,0).getDate();
+  const ym=full?a.slice(0,7):a+"_sd_"+b;
+  const filled=days.filter(d=>Object.values(db.records[d]||{}).some(r=>r.s)).length;
+  const groups=Object.keys(GR).map(g=>({g,list:db.people.filter(p=>(p.g||"")===g)})).filter(x=>x.list.length);
+  groups.forEach(x=>x.list.sort((a,b)=>(b.id===(db.coord||{})[x.g])-(a.id===(db.coord||{})[x.g])));
+  const rate=db.rate==null?110000:+db.rate;
+  const rateK=db.rateK==null?rate:+db.rateK;
+  const rateL=db.rateL==null?rateK:+db.rateL;
+  const rows=p=>{const cs=days.map(d=>((db.records[d]||{})[p.id]||{}).s||"");const c={H:0,I:0,S:0,C:0,A:0};cs.forEach(s=>{if(s)c[s]++});const isK=!!(p.g&&p.g!=="K"&&(db.coord||{})[p.g]===p.id);return{cs,c,isK,pct:filled?Math.round(100*c.H/filled)+"%":"-",pay:c.H*(p.g==="L"?rateL:(isK?rateK:rate))}};
+  return{ym,y,m,nd,days,filled,groups,rows,rate,rateK,rateL,a,b,full};
+}
+function rekap(){
+  const D=rekapData();let n=0;
+  const fd=s=>{const [yy,mm,dd]=s.split("-").map(Number);return new Date(yy,mm-1,dd).toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"})};const bln=(D.full?new Date(D.y,D.m-1,1).toLocaleDateString("id-ID",{month:"long",year:"numeric"}):fd(D.a)+" s.d. "+fd(D.b)).toUpperCase();
+  const th=`<tr><th>No</th><th>Nama</th>${D.days.map((d,i)=>`<th>${i+1}</th>`).join("")}<th>H</th><th>I</th><th>S</th><th>Ct</th><th>A</th><th>%</th><th>Gaji (Rp)</th></tr>`;
+  const rp=v=>"Rp"+Number(v).toLocaleString("id-ID");
+  let totH=0,totPay=0;D.groups.forEach(x=>x.list.forEach(p=>{const r=D.rows(p);totH+=r.c.H;totPay+=r.pay}));
+  const tot=`<tr class="g"><td colspan="${D.nd+2}" style="text-align:right">TOTAL</td><td colspan="6">${totH} hari hadir</td><td style="text-align:right">${rp(totPay)}</td></tr>`;
+  const body=D.groups.map(x=>`<tr class="g"><td colspan="${D.nd+9}">${GR[x.g]||"Belum dikelompokkan"}</td></tr>`+x.list.map(p=>{const r=D.rows(p);n++;return `<tr><td>${n}</td><td class="n">${esc(p.name)}${r.isK?" <b>(Koord.)</b>":""}</td>${r.cs.map(s=>`<td style="color:var(--${s||"mut"})">${s==="C"?"Ct":s}</td>`).join("")}<td class="t">${r.c.H}</td><td class="t">${r.c.I}</td><td class="t">${r.c.S}</td><td class="t">${r.c.C}</td><td class="t">${r.c.A}</td><td class="t">${r.pct}</td><td class="t" style="text-align:right;white-space:nowrap">${rp(r.pay)}</td></tr>`}).join("")).join("");
+  $("rt").innerHTML=`<h2 style="font-size:15px;text-align:center;margin:0 0 4px">REKAP ABSENSI RELAWAN SPPG KARANGDUAK<br>${bln}</h2><div style="text-align:center;font-size:11px;color:var(--mut);margin-bottom:8px">Hari tercatat: ${D.filled} · % = Hadir ÷ hari tercatat · Gaji = hari Hadir × tarif (anggota ${rp(D.rate)}, koordinator ${rp(D.rateK)}, Asisten Lapangan ${rp(D.rateL)})</div><table class="rt"><thead>${th}</thead><tbody>${body}${tot}</tbody></table>`;
+}
+function tab(v){view=v;$("v1").style.display=v===1?"":"none";$("v2").style.display=v===2?"":"none";$("t1").className=v===1?"p":"";$("t2").className=v===2?"p":"";if(v===2){if(!$("rm").value)$("rm").value=$("d").value.slice(0,7);$("rr").value=fmtIn(db.rate==null?110000:db.rate);$("rk").value=fmtIn(db.rateK==null?num($("rr").value):db.rateK);$("rl").value=fmtIn(db.rateL==null?num($("rk").value):db.rateL);rekap()}else render()}
+$("t1").onclick=()=>tab(1);$("t2").onclick=()=>tab(2);$("rm").onchange=()=>{if($("rm").value)setRange($("rm").value);rekap()};$("rf1").onchange=$("rf2").onchange=rekap;$("rr").oninput=()=>{db.rate=rupInput($("rr"));if(db.rateK==null)$("rk").value=$("rr").value;saveRate("rate");rekap()};$("rk").oninput=()=>{db.rateK=rupInput($("rk"));if(db.rateL==null)$("rl").value=$("rk").value;saveRate("rateK");rekap()};$("rl").oninput=()=>{db.rateL=rupInput($("rl"));saveRate("rateL");rekap()};$("rp").onclick=()=>{try{window.print()}catch(e){}};
+$("csv").onclick=()=>{const D=rekapData(),q=s=>'"'+String(s).replace(/"/g,'""')+'"';const out=[["Kelompok","Nama",...D.days.map((d,i)=>i+1),"Hadir","Izin","Sakit","Cuti","Alpa","%Hadir","Gaji"].map(q).join(";")];D.groups.forEach(x=>x.list.forEach(p=>{const r=D.rows(p);out.push([GR[x.g]||"-",p.name,...r.cs,r.c.H,r.c.I,r.c.S,r.c.C,r.c.A,r.pct,r.pay].map(q).join(";"))}));dlf("rekap-absensi-"+D.ym+".csv","﻿"+out.join("\r\n"),"text/csv")};
+$("bk").onclick=()=>dlf("backup-absensi-"+todayStr()+".json",JSON.stringify(db),"application/json");
+$("rs").onclick=()=>$("rf").click();
+$("rf").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{let j;try{j=JSON.parse(r.result);if(!j||!Array.isArray(j.people)||typeof j.records!=="object")throw 0}catch(x){alert("File backup tidak valid.");return}ask("Impor data dari file backup? Data dengan nama/tanggal yang sama akan ditimpa, data lain tetap ada.",()=>importBackup(j))};r.readAsText(f);e.target.value=""};
+async function importBackup(j){try{setSt("Mengimpor…");await q;
+  const ppl=j.people.map(p=>({id:String(p.id),name:p.name,g:p.g||""}));
+  const ids=new Set(ppl.map(p=>p.id));db.people.forEach(p=>ids.add(p.id));
+  const rows=[];Object.entries(j.records).forEach(([d,m])=>Object.entries(m||{}).forEach(([id,v])=>{if(v&&ST[v.s]&&ids.has(id)&&/^\d{4}-\d{2}-\d{2}$/.test(d))rows.push({date:d,id:id,status:v.s})}));
+  await api({action:"importPeople",people:ppl});
+  for(let i=0;i<rows.length;i+=1500){setSt("Mengimpor "+Math.min(i+1500,rows.length)+"/"+rows.length+"…");await api({action:"importRecords",rows:rows.slice(i,i+1500)})}
+  const S={},coord=Object.assign({},j.coord||{});delete coord.K;if(Object.keys(coord).length)S.coord=coord;["rate","rateK","rateL"].forEach(k=>{if(j[k]!=null)S[k]=+j[k]});
+  if(Object.keys(S).length)await api({action:"importSettings",settings:S});
+  await loadAll();render();if(view===2)tab(2);setSt("Impor selesai ✓")}catch(e){toast("Gagal impor: "+(e.message||e));setSt("Gagal impor","var(--A)")}}
+function clearCode(){try{localStorage.removeItem(KK);sessionStorage.removeItem(KK)}catch(e){}}
+function showLogin(msg){CODE="";clearCode();$("app").style.display="none";$("login").style.display="";$("lm").textContent=msg||"";db={people:[],records:{},coord:{},rate:null,rateK:null,rateL:null}}
+async function tryLogin(code,remember){CODE=code;try{await loadAll()}catch(e){CODE="";throw e}
+  try{clearCode();(remember?localStorage:sessionStorage).setItem(KK,code)}catch(e){}
+  $("login").style.display="none";$("app").style.display="";$("who").textContent="🔑 Admin";setSt("Tersambung ✓");
+  view=1;$("v1").style.display="";$("v2").style.display="none";$("t1").className="p";$("t2").className="";render();startPoll()}
+$("lg").onclick=async()=>{const pw=$("lp").value.trim();if(!pw){$("lm").textContent="Isi kode akses.";return}$("lm").textContent="Memeriksa…";$("lg").disabled=true;try{await tryLogin(pw,$("lr").checked);$("lp").value=""}catch(e){const m=e&&e.message;$("lm").textContent=m==="KODE_SALAH"?"Kode akses salah.":m==="TERKUNCI"?"Terlalu banyak percobaan salah. Coba lagi 10 menit lagi.":"Tidak dapat terhubung: "+m}finally{$("lg").disabled=false}};
+$("lp").onkeydown=e=>{if(e.key==="Enter")$("lg").click()};
+$("lo").onclick=()=>showLogin("");
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-lastLoad>20000)checkVer()});
+(async function boot(){
+  if(API_URL.indexOf("ISI_")===0){showLogin("Belum dikonfigurasi: isi API_URL di bagian atas script file ini (lihat PANDUAN).");return}
+  let c="",rem=false;try{c=localStorage.getItem(KK)||"";rem=!!c;if(!c)c=sessionStorage.getItem(KK)||""}catch(e){}
+  if(c){try{await tryLogin(c,rem);return}catch(e){const m=e&&e.message;showLogin(m==="KODE_SALAH"?"Kode akses sudah diganti. Masuk lagi.":"");return}}
+  showLogin("");
+})();
+</script>
+</body>
+</html>
