@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Absensi Karangduak</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mut:#6b7280;--bd:#e3e6ea;--pri:#2563eb;--H:#16a34a;--I:#d97706;--S:#7c3aed;--C:#0891b2;--A:#dc2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111418;--card:#1b2026;--tx:#eef0f3;--mut:#9aa3ad;--bd:#2c333b;--pri:#60a5fa;--H:#4ade80;--I:#fbbf24;--S:#a78bfa;--C:#22d3ee;--A:#f87171}}
@@ -129,7 +130,7 @@ html{-webkit-text-size-adjust:100%}
 <main>
 <header><b>SATUAN PELAYANAN PEMENUHAN GIZI<br>KARANGDUAK KABUPATEN SUMENEP</b>YAYASAN ABINAYA DHAKARA Indonesia</header>
 <h1>ABSENSI RELAWAN SPPG KARANGDUAK</h1>
-<div id="login" style="display:none"><div class="card" style="max-width:360px;margin:24px auto"><p style="margin-top:0;font-weight:600;text-align:center">Masuk Admin</p><div class="fld"><label for="lp">Kode akses</label><input id="lp" type="password" autocomplete="current-password"></div><label style="display:flex;gap:8px;align-items:center;font-size:13px;margin-top:10px;color:var(--mut)"><input type="checkbox" id="lr" style="min-height:0"> Ingat di perangkat ini</label><button id="lg" class="p" style="width:100%;margin-top:14px">Masuk</button><p id="lm" style="color:var(--A);font-size:13px;text-align:center;margin:10px 0 0"></p></div></div>
+<div id="login" style="display:none"><div class="card" style="max-width:360px;margin:24px auto"><p style="margin-top:0;font-weight:600;text-align:center">Masuk Admin</p><div class="fld"><label for="le">Email</label><input id="le" type="email" autocomplete="username"></div><div class="fld" style="margin-top:10px"><label for="lp">Password</label><input id="lp" type="password" autocomplete="current-password"></div><button id="lg" class="p" style="width:100%;margin-top:14px">Masuk</button><p id="lm" style="color:var(--A);font-size:13px;text-align:center;margin:10px 0 0"></p></div></div>
 <div id="app" style="display:none">
 <div class="card row noprint" style="justify-content:space-between;font-size:12px;color:var(--mut);padding:8px 12px"><span id="who"></span><span id="sst"></span><button id="lo" style="min-height:0;padding:4px 10px">Keluar</button></div>
 <div class="card row noprint"><button id="t1" class="p">✅ Absensi</button><button id="t2">📊 Rekap</button></div>
@@ -146,7 +147,7 @@ html{-webkit-text-size-adjust:100%}
 <div id="v2" style="display:none">
 <div class="card noprint"><div class="rk-grid"><div class="fld"><label for="rm">📅 Bulan (pilih cepat)</label><input type="month" id="rm"></div><div class="fld"><label for="rf1">Dari tanggal</label><input type="date" id="rf1"></div><div class="fld"><label for="rf2">Sampai tanggal</label><input type="date" id="rf2"></div><div class="fld"><label for="rr">Gaji anggota / hari</label><input type="text" inputmode="numeric" id="rr"></div><div class="fld"><label for="rk">Gaji koordinator / hari</label><input type="text" inputmode="numeric" id="rk"></div><div class="fld"><label for="rl">Gaji Asisten Lapangan / hari</label><input type="text" inputmode="numeric" id="rl"></div></div><div class="rk-act"><button id="csv">⬇ Unduh CSV</button><button id="rp" class="p">🖨 Cetak Rekap</button></div></div>
 <div class="card" style="overflow-x:auto"><div id="rt"></div></div>
-<div class="card row noprint"><span style="font-size:12px;color:var(--mut);flex:1;min-width:160px">Data tersimpan di Google Sheets dan dipakai bersama semua admin. Backup berkala tetap disarankan. Pulihkan juga dipakai untuk memindahkan data dari versi lama.</span><button id="bk">💾 Backup</button><button id="rs">📂 Pulihkan</button><input type="file" id="rf" accept=".json,application/json" hidden></div>
+<div class="card row noprint"><span style="font-size:12px;color:var(--mut);flex:1;min-width:160px">Data tersimpan di database (Supabase) dan dipakai bersama semua admin. Backup berkala tetap disarankan. Pulihkan juga dipakai untuk memindahkan data dari versi lama.</span><button id="bk">💾 Backup</button><button id="rs">📂 Pulihkan</button><input type="file" id="rf" accept=".json,application/json" hidden></div>
 </div>
 <div id="dlg" class="noprint"><div class="card" style="max-width:320px;margin:16px"><p id="dm" style="margin-top:0"></p><div class="row" style="justify-content:flex-end"><button id="dn">Batal</button><button id="dy" class="p" style="background:var(--A);border-color:var(--A)">Ya, lanjutkan</button></div></div></div>
 <div id="edlg" class="noprint"><div class="card" style="max-width:320px;width:100%;margin:16px"><p style="margin-top:0;font-weight:600">Edit nama relawan</p><input id="en" style="width:100%;margin-bottom:10px"><div class="row" style="justify-content:flex-end"><button id="ec">Batal</button><button id="es" class="p">Simpan</button></div></div></div>
@@ -156,25 +157,31 @@ html{-webkit-text-size-adjust:100%}
 <script>
 const GR={L:"Asisten Lapangan",P:"Persiapan",M:"Masak",R:"Pemorsian",D:"Distribusi",O:"Cuci Ompreng",K:"Kebersihan / Keamanan","":"Belum dikelompokkan"};
 const ST={H:"Hadir",I:"Izin",S:"Sakit",C:"Cuti (Ct)",A:"Alpa"};
-const API_URL="https://script.google.com/macros/s/AKfycbykeLcBM57FyfsoWEjZXwKav61cClTXI8Il-HHYr01G6JTJvc4vXCdWEEPbCRe0MSZSNg/exec";   // contoh: https://script.google.com/macros/s/AKfy.../exec
-const KK="absensi-kode";
-const KODE_TERTANAM="Karangduak2026Relawan"; // kode akses tertanam = langsung masuk tanpa login. Kosongkan ("") untuk memakai layar login.
+const SUPABASE_URL="https://pxuvnftgcrxjrqgtpzec.supabase.co";      // contoh: https://abcdefgh.supabase.co
+const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4dXZuZnRnY3J4anJxZ3RwemVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1ODYzODksImV4cCI6MjEwNzE2MjM4OX0.kjUWGzXAGjX1jY_nFwnnGepHNpl-zC1-uWenQy-kJo8";  // anon / publishable key (BUKAN service_role)
+const AUTO_EMAIL="";  // isi email + password admin agar langsung masuk tanpa layar login
+const AUTO_PASS="";   // kosongkan keduanya untuk memakai layar login
 let db={people:[],records:{},coord:{},rate:null,rateK:null,rateL:null};
-let CODE="",ver=null,lastLoad=0,q=Promise.resolve(),pend=0,timer=null;
+let sb=null,ch=null,lastLoad=0;
 const debounce=(f,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>f(...a),ms)}};
 function setSt(t,c){const e=document.getElementById("sst");if(e){e.textContent=t;e.style.color=c||"var(--mut)"}}
 function toast(m){let t=document.getElementById("toast");if(!t){t=document.createElement("div");t.id="toast";t.className="noprint";t.style.cssText="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:#b91c1c;color:#fff;padding:10px 14px;border-radius:10px;font-size:13px;z-index:20;max-width:90%;display:none";document.body.appendChild(t)}t.textContent=m;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>{t.style.display="none"},6000)}
-async function api(body){const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),45000);try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({code:CODE},body)),signal:ctl.signal});const j=await r.json();if(!j.ok)throw new Error(j.error||"Gagal");return j}finally{clearTimeout(t)}}
+async function fetchAll(t,cols,ord){let out=[],from=0;for(;;){let q=sb.from(t).select(cols);ord.forEach(o=>{q=q.order(o)});const {data,error}=await q.range(from,from+999);if(error)throw error;out=out.concat(data);if(data.length<1000)break;from+=1000}return out}
 function applyPeople(pp){db.people=pp.map(p=>({id:String(p.id),name:p.name,g:p.g||""}))}
-function applySettings(S){db.rate=S.rate==null?null:+S.rate;db.rateK=S.rateK==null?null:+S.rateK;db.rateL=S.rateL==null?null:+S.rateL;db.coord=S.coord||{};delete db.coord.K}
-async function loadAll(){const j=await api({action:"load"});applyPeople(j.people);applySettings(j.settings||{});db.records={};j.records.forEach(r=>{(db.records[r[0]]=db.records[r[0]]||{})[r[1]]={s:r[2]}});ver=j.ver;lastLoad=Date.now()}
-function onErr(e){const m=e&&e.message||String(e);if(m==="KODE_SALAH"||m==="TERKUNCI"){showLogin(m==="KODE_SALAH"?"Kode akses salah atau sudah diganti. Silakan masuk lagi.":"Terlalu banyak percobaan salah. Coba lagi 10 menit lagi.");return}toast("Gagal menyimpan: "+m);setSt("Gagal menyimpan","var(--A)");loadAll().then(refresh).catch(()=>{})}
-function run(body){pend++;setSt("Menyimpan…");q=q.then(async()=>{try{const j=await api(body);if(ver!=null&&j.ver!==ver+1){ver=j.ver;await loadAll();refresh()}else ver=j.ver;setSt("Tersimpan ✓")}catch(e){onErr(e)}finally{pend--}})}
-const setS=(k,v)=>run({action:"setSetting",key:k,value:v});
+function applySettings(ss){const S={};ss.forEach(r=>{S[r.key]=r.value});db.rate=S.rate==null?null:+S.rate;db.rateK=S.rateK==null?null:+S.rateK;db.rateL=S.rateL==null?null:+S.rateL;db.coord=S.coord||{};delete db.coord.K}
+async function loadAll(){
+  const [pp,rr,ss]=await Promise.all([fetchAll("people","id,name,g",["id"]),fetchAll("records","date,person_id,status",["date","person_id"]),sb.from("settings").select("key,value")]);
+  if(ss.error)throw ss.error;
+  applyPeople(pp);applySettings(ss.data||[]);
+  db.records={};rr.forEach(r=>{(db.records[r.date]=db.records[r.date]||{})[r.person_id]={s:r.status}});
+  lastLoad=Date.now();
+}
+async function run(p){try{const {error}=await p;if(error)throw error;setSt("Tersimpan ✓")}catch(e){toast("Gagal menyimpan: "+(e.message||e));setSt("Gagal menyimpan","var(--A)");try{await loadAll();refresh()}catch(x){}}}
+const setS=(k,v)=>run(sb.from("settings").upsert({key:k,value:v}));
 const saveRate=(()=>{const t={};return k=>{clearTimeout(t[k]);t[k]=setTimeout(()=>setS(k,db[k]),600)}})();
 const refresh=debounce(()=>{render();if(view===2)rekap()},150);
-async function checkVer(){if(document.hidden||pend||!CODE||$("app").style.display==="none")return;try{const j=await api({action:"version"});if(j.ver!==ver){await loadAll();refresh()}}catch(e){const m=e&&e.message;if(m==="KODE_SALAH"||m==="TERKUNCI")onErr(e)}}
-const startPoll=()=>{if(!timer)timer=setInterval(checkVer,30000)};
+const reloadSmall=debounce(async()=>{try{const [pp,ss]=await Promise.all([fetchAll("people","id,name,g",["id"]),sb.from("settings").select("key,value")]);applyPeople(pp);applySettings(ss.data||[]);refresh()}catch(e){}},300);
+function subscribe(){if(ch)return;try{ch=sb.channel("absensi").on("postgres_changes",{event:"*",schema:"public",table:"records"},pl=>{const n=pl.new||{},o=pl.old||{};if(pl.eventType==="DELETE"){if(db.records[o.date])delete db.records[o.date][o.person_id]}else{(db.records[n.date]=db.records[n.date]||{})[n.person_id]={s:n.status}}refresh()}).on("postgres_changes",{event:"*",schema:"public",table:"people"},reloadSmall).on("postgres_changes",{event:"*",schema:"public",table:"settings"},reloadSmall).subscribe()}catch(e){}}
 let cb=null,eid=null;
 const $=id=>document.getElementById(id);
 function ask(m,f){$("dm").textContent=m;cb=f;$("dlg").style.display="flex"}
@@ -199,23 +206,23 @@ function render(){
   $("list").innerHTML=out||'<div class="empty">Tidak ada relawan.</div>';
   $("sign").innerHTML=`<tr><td>Mengetahui:<br>Koordinator Persiapan, Masak, Pemorsian, Distribusi, dan Cuci Ompreng</td><td>Menyetujui:<br>Asisten Lapangan</td><td>Kepala SPPG</td></tr>`;
 }
-function setv(id,k,v){const d=$("d").value,r=rec();r[id]=r[id]||{};if(v)r[id][k]=v;else delete r[id][k];const s=r[id].s;if(!s)delete r[id];render();run({action:"setStatus",rows:[{date:d,id:id,status:s||""}]})}
-$("list").onchange=e=>{const t=e.target;if(t.dataset.ck){setv(t.dataset.id,"s",t.checked?"H":"");return}if(t.dataset.gc){db.coord=db.coord||{};if(t.value)db.coord[t.dataset.gc]=t.value;else delete db.coord[t.dataset.gc];render();setS("coord",db.coord);return}if(t.dataset.k==="g"){const p=db.people.find(x=>x.id===t.dataset.id);if(p){const wasC=db.coord&&db.coord[p.g]===p.id;if(wasC)delete db.coord[p.g];p.g=t.value;render();run({action:"updatePerson",id:p.id,g:p.g});if(wasC)setS("coord",db.coord)}}else if(t.dataset.k)setv(t.dataset.id,t.dataset.k,t.value)};
+function setv(id,k,v){const d=$("d").value,r=rec();r[id]=r[id]||{};if(v)r[id][k]=v;else delete r[id][k];const s=r[id].s;if(!s)delete r[id];render();run(s?sb.from("records").upsert({date:d,person_id:id,status:s}):sb.from("records").delete().eq("date",d).eq("person_id",id))}
+$("list").onchange=e=>{const t=e.target;if(t.dataset.ck){setv(t.dataset.id,"s",t.checked?"H":"");return}if(t.dataset.gc){db.coord=db.coord||{};if(t.value)db.coord[t.dataset.gc]=t.value;else delete db.coord[t.dataset.gc];render();setS("coord",db.coord);return}if(t.dataset.k==="g"){const p=db.people.find(x=>x.id===t.dataset.id);if(p){const wasC=db.coord&&db.coord[p.g]===p.id;if(wasC)delete db.coord[p.g];p.g=t.value;render();run(sb.from("people").update({g:p.g}).eq("id",p.id));if(wasC)setS("coord",db.coord)}}else if(t.dataset.k)setv(t.dataset.id,t.dataset.k,t.value)};
 $("list").onclick=e=>{const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.gall){const r=rec(),d=$("d").value,rows=[];db.people.filter(p=>(p.g||"")===b.dataset.gall).forEach(p=>{r[p.id]=r[p.id]||{};if(!r[p.id].s){r[p.id].s="H";rows.push({date:d,id:p.id,status:"H"})}});render();if(rows.length)run({action:"setStatus",rows});return}
+  if(b.dataset.gall){const r=rec(),d=$("d").value,rows=[];db.people.filter(p=>(p.g||"")===b.dataset.gall).forEach(p=>{r[p.id]=r[p.id]||{};if(!r[p.id].s){r[p.id].s="H";rows.push({date:d,person_id:p.id,status:"H"})}});render();if(rows.length)run(sb.from("records").upsert(rows));return}
   if(b.dataset.s){const cur=(rec()[b.dataset.id]||{}).s;setv(b.dataset.id,"s",cur===b.dataset.s?"":b.dataset.s)}else if(b.dataset.now)setv(b.dataset.id,b.dataset.now,now());
   else if(b.dataset.edit){const pp=db.people.find(x=>x.id===b.dataset.edit);if(pp){eid=pp.id;$("en").value=pp.name;$("edlg").style.display="flex";$("en").focus()}}};
 $("gf").innerHTML='<option value="*">Semua kelompok</option>'+Object.keys(GR).map(k=>`<option value="${k}">${GR[k]}</option>`).join("");$("gf").onchange=render;
 $("q").oninput=render;$("d").onchange=render;
 $("pv").onclick=()=>shift(-1);$("nx").onclick=()=>shift(1);$("td").onclick=()=>{$("d").value=todayStr();render()};
-$("allH").onclick=()=>ask("Tandai semua relawan yang belum diisi sebagai Hadir?",()=>{const r=rec(),d=$("d").value,rows=[];db.people.forEach(p=>{r[p.id]=r[p.id]||{};if(!r[p.id].s){r[p.id].s="H";rows.push({date:d,id:p.id,status:"H"})}});render();if(rows.length)run({action:"setStatus",rows})});
-$("add").onclick=()=>{const v=$("n").value.trim();if(!v)return;const last=db.people.reduce((m,p)=>Math.max(m,+p.id||0),202510000);const np={id:String(last+1),name:v,g:$("gf").value==="*"?"":$("gf").value};db.people.push(np);$("n").value="";render();run({action:"addPerson",id:np.id,name:np.name,g:np.g})};
-$("rst").onclick=()=>ask("Hapus semua isian absensi pada tanggal ini?",()=>{const d=$("d").value;delete db.records[d];render();run({action:"clearDay",date:d})});
+$("allH").onclick=()=>ask("Tandai semua relawan yang belum diisi sebagai Hadir?",()=>{const r=rec(),d=$("d").value,rows=[];db.people.forEach(p=>{r[p.id]=r[p.id]||{};if(!r[p.id].s){r[p.id].s="H";rows.push({date:d,person_id:p.id,status:"H"})}});render();if(rows.length)run(sb.from("records").upsert(rows))});
+$("add").onclick=()=>{const v=$("n").value.trim();if(!v)return;const last=db.people.reduce((m,p)=>Math.max(m,+p.id||0),202510000);const np={id:String(last+1),name:v,g:$("gf").value==="*"?"":$("gf").value};db.people.push(np);$("n").value="";render();run(sb.from("people").insert(np))};
+$("rst").onclick=()=>ask("Hapus semua isian absensi pada tanggal ini?",()=>{const d=$("d").value;delete db.records[d];render();run(sb.from("records").delete().eq("date",d))});
 $("prt").onclick=()=>{try{window.print()}catch(e){}};
 $("dn").onclick=()=>{$("dlg").style.display="none"};
 $("dy").onclick=()=>{$("dlg").style.display="none";const f=cb;cb=null;if(f)f()};
 $("ec").onclick=()=>{$("edlg").style.display="none"};
-$("es").onclick=()=>{const v=$("en").value.trim(),p=db.people.find(x=>x.id===eid);if(v&&p){p.name=v;run({action:"updatePerson",id:p.id,name:v})}$("edlg").style.display="none";render()};
+$("es").onclick=()=>{const v=$("en").value.trim(),p=db.people.find(x=>x.id===eid);if(v&&p){p.name=v;run(sb.from("people").update({name:v}).eq("id",p.id))}$("edlg").style.display="none";render()};
 $("en").onkeydown=e=>{if(e.key==="Enter")$("es").click()};
 const fmtIn=v=>"Rp "+Number(v).toLocaleString("id-ID");
 const num=s=>+String(s).replace(/\D/g,"")||0;
@@ -256,30 +263,27 @@ $("csv").onclick=()=>{const D=rekapData(),q=s=>'"'+String(s).replace(/"/g,'""')+
 $("bk").onclick=()=>dlf("backup-absensi-"+todayStr()+".json",JSON.stringify(db),"application/json");
 $("rs").onclick=()=>$("rf").click();
 $("rf").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{let j;try{j=JSON.parse(r.result);if(!j||!Array.isArray(j.people)||typeof j.records!=="object")throw 0}catch(x){alert("File backup tidak valid.");return}ask("Impor data dari file backup? Data dengan nama/tanggal yang sama akan ditimpa, data lain tetap ada.",()=>importBackup(j))};r.readAsText(f);e.target.value=""};
-async function importBackup(j){try{setSt("Mengimpor…");await q;
+async function importBackup(j){try{setSt("Mengimpor…");
   const ppl=j.people.map(p=>({id:String(p.id),name:p.name,g:p.g||""}));
   const ids=new Set(ppl.map(p=>p.id));db.people.forEach(p=>ids.add(p.id));
-  const rows=[];Object.entries(j.records).forEach(([d,m])=>Object.entries(m||{}).forEach(([id,v])=>{if(v&&ST[v.s]&&ids.has(id)&&/^\d{4}-\d{2}-\d{2}$/.test(d))rows.push({date:d,id:id,status:v.s})}));
-  await api({action:"importPeople",people:ppl});
-  for(let i=0;i<rows.length;i+=1500){setSt("Mengimpor "+Math.min(i+1500,rows.length)+"/"+rows.length+"…");await api({action:"importRecords",rows:rows.slice(i,i+1500)})}
-  const S={},coord=Object.assign({},j.coord||{});delete coord.K;if(Object.keys(coord).length)S.coord=coord;["rate","rateK","rateL"].forEach(k=>{if(j[k]!=null)S[k]=+j[k]});
-  if(Object.keys(S).length)await api({action:"importSettings",settings:S});
+  const rows=[];Object.entries(j.records).forEach(([d,m])=>Object.entries(m||{}).forEach(([id,v])=>{if(v&&ST[v.s]&&ids.has(id)&&/^\d{4}-\d{2}-\d{2}$/.test(d))rows.push({date:d,person_id:id,status:v.s})}));
+  const up=async(t,a)=>{for(let i=0;i<a.length;i+=500){const {error}=await sb.from(t).upsert(a.slice(i,i+500));if(error)throw error}};
+  await up("people",ppl);await up("records",rows);
+  const st=[],coord=Object.assign({},j.coord||{});delete coord.K;if(Object.keys(coord).length)st.push({key:"coord",value:coord});["rate","rateK","rateL"].forEach(k=>{if(j[k]!=null)st.push({key:k,value:+j[k]})});if(st.length)await up("settings",st);
   await loadAll();render();if(view===2)tab(2);setSt("Impor selesai ✓")}catch(e){toast("Gagal impor: "+(e.message||e));setSt("Gagal impor","var(--A)")}}
-function clearCode(){try{localStorage.removeItem(KK);sessionStorage.removeItem(KK)}catch(e){}}
-function showLogin(msg){CODE="";clearCode();$("app").style.display="none";$("login").style.display="";$("lm").textContent=msg||"";db={people:[],records:{},coord:{},rate:null,rateK:null,rateL:null}}
-async function tryLogin(code,remember){CODE=code;try{await loadAll()}catch(e){CODE="";throw e}
-  try{clearCode();(remember?localStorage:sessionStorage).setItem(KK,code)}catch(e){}
-  $("login").style.display="none";$("app").style.display="";$("who").textContent="🔑 Admin";setSt("Tersambung ✓");
-  view=1;$("v1").style.display="";$("v2").style.display="none";$("t1").className="p";$("t2").className="";render();startPoll()}
-$("lg").onclick=async()=>{const pw=$("lp").value.trim();if(!pw){$("lm").textContent="Isi kode akses.";return}$("lm").textContent="Memeriksa…";$("lg").disabled=true;try{await tryLogin(pw,$("lr").checked);$("lp").value=""}catch(e){const m=e&&e.message;$("lm").textContent=m==="KODE_SALAH"?"Kode akses salah.":m==="TERKUNCI"?"Terlalu banyak percobaan salah. Coba lagi 10 menit lagi.":"Tidak dapat terhubung: "+m}finally{$("lg").disabled=false}};
+function showLogin(msg){$("app").style.display="none";$("login").style.display="";$("lm").textContent=msg||"";db={people:[],records:{},coord:{},rate:null,rateK:null,rateL:null};if(ch&&sb){try{sb.removeChannel(ch)}catch(e){}ch=null}}
+async function enter(user){$("login").style.display="none";$("app").style.display="";$("who").textContent="👤 "+(user&&user.email||"");setSt("Memuat…");try{await loadAll();setSt("Tersambung ✓")}catch(e){toast("Gagal memuat data: "+(e.message||e));setSt("Gagal memuat","var(--A)")}view=1;$("v1").style.display="";$("v2").style.display="none";$("t1").className="p";$("t2").className="";render();subscribe()}
+$("lg").onclick=async()=>{if(!sb)return;const em=$("le").value.trim(),pw=$("lp").value;if(!em||!pw){$("lm").textContent="Isi email dan password.";return}$("lm").textContent="Masuk…";const {data,error}=await sb.auth.signInWithPassword({email:em,password:pw});if(error){$("lm").textContent="Email atau password salah.";return}$("lp").value="";await enter(data.user)};
 $("lp").onkeydown=e=>{if(e.key==="Enter")$("lg").click()};
-$("lo").onclick=()=>showLogin("");
-document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-lastLoad>20000)checkVer()});
+$("lo").onclick=async()=>{if(sb)await sb.auth.signOut();showLogin("")};
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&sb&&$("app").style.display!=="none"&&Date.now()-lastLoad>60000)loadAll().then(refresh).catch(()=>{})});
 (async function boot(){
-  if(API_URL.indexOf("ISI_")===0){showLogin("Belum dikonfigurasi: isi API_URL di bagian atas script file ini (lihat PANDUAN).");return}
-  if(KODE_TERTANAM){try{await tryLogin(KODE_TERTANAM,false);$("lo").style.display="none";return}catch(e){showLogin("Tidak dapat terhubung ke database: "+(e&&e.message||e));return}}
-  let c="",rem=false;try{c=localStorage.getItem(KK)||"";rem=!!c;if(!c)c=sessionStorage.getItem(KK)||""}catch(e){}
-  if(c){try{await tryLogin(c,rem);return}catch(e){const m=e&&e.message;showLogin(m==="KODE_SALAH"?"Kode akses sudah diganti. Masuk lagi.":"");return}}
+  if(!window.supabase||SUPABASE_URL.indexOf("ISI_")===0){showLogin("Belum dikonfigurasi: isi SUPABASE_URL dan SUPABASE_KEY di bagian atas script file ini (lihat PANDUAN).");return}
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  sb.auth.onAuthStateChange(ev=>{if(ev==="SIGNED_OUT")showLogin("")});
+  const {data}=await sb.auth.getSession();
+  if(data.session){await enter(data.session.user);if(AUTO_EMAIL)$("lo").style.display="none";return}
+  if(AUTO_EMAIL&&AUTO_PASS){const r=await sb.auth.signInWithPassword({email:AUTO_EMAIL,password:AUTO_PASS});if(!r.error){await enter(r.data.user);$("lo").style.display="none";return}showLogin("Login otomatis gagal: "+r.error.message);return}
   showLogin("");
 })();
 </script>
