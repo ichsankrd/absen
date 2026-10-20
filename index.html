@@ -195,7 +195,7 @@ function setSt(t,c){const e=document.getElementById("sst");if(e){e.textContent=t
 function toast(m,ok){let t=document.getElementById("toast");if(!t){t=document.createElement("div");t.id="toast";t.className="noprint";t.style.cssText="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:#b91c1c;color:#fff;padding:10px 14px;border-radius:10px;font-size:13px;z-index:20;max-width:90%;display:none";document.body.appendChild(t)}t.textContent=m;t.style.background=ok?"#15803d":"#b91c1c";t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>{t.style.display="none"},6000)}
 async function fetchAll(t,cols,ord){let out=[],from=0;for(;;){let q=sb.from(t).select(cols);ord.forEach(o=>{q=q.order(o)});const {data,error}=await q.range(from,from+999);if(error)throw error;out=out.concat(data);if(data.length<1000)break;from+=1000}return out}
 function applyPeople(pp){db.people=pp.map(p=>({id:String(p.id),name:p.name,g:p.g||""}))}
-function applySettings(ss){const S={};ss.forEach(r=>{S[r.key]=r.value});db.rate=S.rate==null?null:+S.rate;db.rateK=S.rateK==null?null:+S.rateK;db.rateL=S.rateL==null?null:+S.rateL;db.coord=S.coord||{};db.phones=S.phones||{};delete db.coord.K}
+function applySettings(ss){const S={};ss.forEach(r=>{S[r.key]=r.value});db.rate=S.rate==null?null:+S.rate;db.rateK=S.rateK==null?null:+S.rateK;db.rateL=S.rateL==null?null:+S.rateL;db.coord=S.coord||{};{const ph=Object.assign({},S.phones||{});Object.keys(S).forEach(k=>{if(k.indexOf("phone:")===0){const v=String(S[k]==null?"":S[k]).trim();if(v)ph[k.slice(6)]=v;else delete ph[k.slice(6)]}});db.phones=ph}delete db.coord.K}
 async function loadAll(){
   const [pp,rr,ss]=await Promise.all([fetchAll("people","id,name,g",["id"]),fetchAll("records","date,person_id,status",["date","person_id"]),sb.from("settings").select("key,value")]);
   if(ss.error)throw ss.error;
@@ -310,7 +310,9 @@ function terbilang(n){n=Math.floor(n);const s=["","satu","dua","tiga","empat","l
   if(n<1e9)return terbilang(Math.floor(n/1e6))+" juta"+(n%1e6?" "+terbilang(n%1e6):"");
   return terbilang(Math.floor(n/1e9))+" miliar"+(n%1e9?" "+terbilang(n%1e9):"")}
 const waNum=s=>{let n=String(s||"").replace(/\D/g,"");if(n.startsWith("0"))n="62"+n.slice(1);else if(n.startsWith("8"))n="62"+n;return n.length>=10?n:""};
-const savePh=(id,v)=>{db.phones=db.phones||{};v=String(v||"").trim();if((db.phones[id]||"")===v)return;if(v)db.phones[id]=v;else delete db.phones[id];setS("phones",db.phones)};
+const savePh=(id,v)=>{db.phones=db.phones||{};v=String(v||"").trim();if((db.phones[id]||"")===v)return;if(v)db.phones[id]=v;else delete db.phones[id];setS("phone:"+id,v)};
+const savePhD=(()=>{const t={};return(id,v)=>{clearTimeout(t[id]);t[id]=setTimeout(()=>savePh(id,v),500)}})();
+function syncPh(){const a=document.activeElement;$("slw").querySelectorAll("input[data-ph]").forEach(i=>{if(i!==a)i.value=(db.phones||{})[i.dataset.ph]||""})}
 let slipData={};
 function drawSlip(d){
   const S=2,W=720,P=40,F='system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif',tw=W-2*P,RH=30;
@@ -360,7 +362,7 @@ function paintSend(){const e=$("slst");if(!e)return;const s=sendSt;if(!s){e.inne
   const b=$("slstop");if(b)b.onclick=()=>{s.stop=true;b.disabled=true}}
 function sendAll(){
   if(sendSt&&sendSt.run)return;
-  const list=[],skip=[];Object.keys(slipData).forEach(id=>{const n=waNum((db.phones||{})[id]);if(n)list.push({id,n});else skip.push(slipData[id].nama)});
+  const list=[],skip=[];Object.keys(slipData).forEach(id=>{const inp=$("slw").querySelector('input[data-ph="'+id+'"]');const n=waNum(inp?inp.value:(db.phones||{})[id]);if(n)list.push({id,n});else skip.push(slipData[id].nama)});
   if(!list.length){toast("Belum ada nomor WA yang terisi.");return}
   if(!getTk()){toast("Isi Token Fonnte dulu di kolom di atas slip.");return}
   ask("Kirim "+list.length+" slip gaji (gambar) lewat WhatsApp"+(skip.length?"; "+skip.length+" orang dilewati karena belum ada nomor":"")+"? Butuh sekitar "+Math.ceil(list.length*7/60)+" menit. Jangan tutup halaman ini selama proses.",()=>runSend(list,skip))}
@@ -412,10 +414,11 @@ function slip(){
 }
 $("slp").onclick=()=>{slip();$("slw").scrollIntoView({behavior:"smooth",block:"start"})};
 $("sp").onchange=()=>{if($("slw").style.display!=="none")slip()};
+$("slw").oninput=e=>{const t=e.target;if(t.dataset&&t.dataset.ph)savePhD(t.dataset.ph,t.value)};
 $("slw").onchange=e=>{const t=e.target;if(t.dataset&&t.dataset.ph)savePh(t.dataset.ph,t.value)};
 $("slw").onclick=e=>{const b=e.target.closest("button[data-fi]");if(!b)return;const id=b.dataset.fi,inp=$("slw").querySelector('input[data-ph="'+id+'"]'),n=waNum(inp&&inp.value);if(inp)savePh(id,inp.value);sendSlip(id,n)};
 window.addEventListener("afterprint",()=>document.body.classList.remove("ps"));
-{const _rk=rekap;rekap=function(){_rk();if($("slw").style.display!=="none")slip()}}
+{const _rk=rekap;rekap=function(){_rk();if($("slw").style.display==="none")return;const a=document.activeElement;if(a&&a.dataset&&a.dataset.ph&&$("slw").contains(a))syncPh();else slip()}}
 function showLogin(msg){$("app").style.display="none";$("login").style.display="";$("lm").textContent=msg||"";db={people:[],records:{},coord:{},rate:null,rateK:null,rateL:null};if(ch&&sb){try{sb.removeChannel(ch)}catch(e){}ch=null}}
 async function enter(user){$("login").style.display="none";$("app").style.display="";$("who").textContent="👤 "+(user&&user.email||"");setSt("Memuat…");try{await loadAll();setSt("Tersambung ✓")}catch(e){toast("Gagal memuat data: "+(e.message||e));setSt("Gagal memuat","var(--A)")}view=1;$("v1").style.display="";$("v2").style.display="none";$("t1").className="p";$("t2").className="";render();subscribe()}
 $("lg").onclick=async()=>{if(!sb)return;const em=$("le").value.trim(),pw=$("lp").value;if(!em||!pw){$("lm").textContent="Isi email dan password.";return}$("lm").textContent="Masuk…";const {data,error}=await sb.auth.signInWithPassword({email:em,password:pw});if(error){$("lm").textContent="Email atau password salah.";return}$("lp").value="";await enter(data.user)};
