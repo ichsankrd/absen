@@ -154,7 +154,7 @@ html{-webkit-text-size-adjust:100%}
 </head>
 <body>
 <main>
-<header><b>SATUAN PELAYANAN PEMENUHAN GIZI<br>KARANGDUAK KABUPATEN SUMENEP</b>YAYASAN ABINAYA DHAKARA Indonesia</header>
+<header><b>SATUAN PELAYANAN PEMENUHAN GIZI<br>KARANGDUAK KABUPATEN SUMENEP</b>YAYASAN ABINAYA DHAKARA INDONESIA</header>
 <h1>ABSENSI RELAWAN SPPG KARANGDUAK</h1>
 <div id="login" style="display:none"><div class="card" style="max-width:360px;margin:24px auto"><p style="margin-top:0;font-weight:600;text-align:center">Masuk Admin</p><div class="fld"><label for="le">Email</label><input id="le" type="email" autocomplete="username"></div><div class="fld" style="margin-top:10px"><label for="lp">Password</label><input id="lp" type="password" autocomplete="current-password"></div><button id="lg" class="p" style="width:100%;margin-top:14px">Masuk</button><p id="lm" style="color:var(--A);font-size:13px;text-align:center;margin:10px 0 0"></p></div></div>
 <div id="app" style="display:none">
@@ -325,7 +325,7 @@ function drawSlip(d){
   c.width=W*S;c.height=H*S;x.scale(S,S);
   x.fillStyle="#fff";x.fillRect(0,0,W,H);
   let y=P;x.textAlign="center";x.fillStyle="#000";x.font="bold 17px "+F;x.fillText("SPPG KARANGDUAK KABUPATEN SUMENEP",W/2,y+14);
-  x.font="13px "+F;x.fillStyle="#555";x.fillText("YAYASAN ABINAYA DHAKARA Indonesia",W/2,y+34);
+  x.font="13px "+F;x.fillStyle="#555";x.fillText("YAYASAN ABINAYA DHAKARA INDONESIA",W/2,y+34);
   y+=48;x.fillStyle="#000";x.fillRect(P,y,tw,2.5);
   y+=36;x.font="bold 18px "+F;if("letterSpacing" in x)x.letterSpacing="3px";x.fillText("SLIP GAJI RELAWAN",W/2,y);if("letterSpacing" in x)x.letterSpacing="0px";
   y+=26;x.textAlign="left";
@@ -333,7 +333,7 @@ function drawSlip(d){
   y+=20;
   const top=y;x.fillStyle="#eee";x.fillRect(P,top,tw,RH);
   x.fillStyle="#000";x.font="bold 13px "+F;x.textAlign="left";x.fillText("Uraian",P+10,top+20);x.textAlign="right";x.fillText("Jumlah",P+tw-10,top+20);
-  rows.forEach((r,i)=>{const ry=top+RH*(i+1),last=i===rows.length-1;if(last){x.fillStyle="#eee";x.fillRect(P,ry,tw,RH)}x.fillStyle="#000";x.font=(last?"bold 14":"14")+"px "+F;x.textAlign="left";x.fillText(r[0],P+10,ry+20);x.textAlign="right";x.fillText(r[1],P+tw-10,ry+20)});
+  rows.forEach((r,i)=>{const ry=top+RH*(i+1),last=i===rows.length-1;if(last){x.fillStyle="#eee";x.fillRect(P,ry,tw,RH)}x.fillStyle="#000";x.font=(last?"bold 14":"14")+"px "+F;x.textAlign="left";x.fillText(r[0],P+10,ry+20);if(r[2]){const lw=x.measureText(r[0]).width;x.font="12px "+F;x.fillStyle="#555";const full="· tgl "+r[2];let tx=full;const mx=tw-20-lw-8-110;while(tx.length>4&&x.measureText(tx).width>mx)tx=tx.slice(0,-2);if(tx!==full)tx=tx.trimEnd()+"…";x.fillText(tx,P+10+lw+8,ry+20);x.fillStyle="#000";x.font="14px "+F}x.textAlign="right";x.fillText(r[1],P+tw-10,ry+20)});
   x.strokeStyle="#999";x.lineWidth=1;for(let i=0;i<=rows.length+1;i++){const ly=top+RH*i;x.beginPath();x.moveTo(P,ly);x.lineTo(P+tw,ly);x.stroke()}
   x.strokeRect(P,top,tw,RH*(rows.length+1));
   x.strokeStyle="#000";x.lineWidth=2;x.beginPath();x.moveTo(P,top+RH*rows.length);x.lineTo(P+tw,top+RH*rows.length);x.stroke();
@@ -341,7 +341,7 @@ function drawSlip(d){
   x.textAlign="left";x.fillStyle="#555";x.font="italic 14px "+F;lines.forEach((l,i)=>x.fillText(l,P,y+i*20));
   y+=lines.length*20+24;
   x.textAlign="center";x.fillStyle="#000";x.font="14px "+F;const sx=W-P-110;
-  x.fillText("Sumenep, "+d.tgl,sx,y);x.fillText("Akuntan",sx,y+20);x.font="bold 14px "+F;x.fillText("ANISA CINDY WIJAYA",sx,y+90);
+  x.fillText("Sumenep, "+d.tgl,sx,y);x.fillText("Akuntan",sx,y+20);x.font="bold 14px "+F;x.fillText("ANISA CINDY WIJAYA S.Ak",sx,y+90);
   return c}
 const dlBlob=(blob,name)=>{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)};
 async function sendSlip(id,n){
@@ -398,14 +398,14 @@ function slip(){
   const SD={};slipData=SD;
   const one=p=>{const r=D.rows(p),tarif=p.g==="L"?D.rateL:(r.isK?D.rateK:D.rate);
     const jab=(GR[p.g||""]||"-")+(r.isK?" (Koordinator)":"");
-    const kata=r.pay>0?terbilang(r.pay).replace(/^./,c=>c.toUpperCase())+" rupiah":"Nol rupiah";
-    SD[p.id]={nama:p.name,jab,bln,per:D.full?"":per,rows:[["Hadir",r.c.H+" hari"],["Izin",r.c.I+" hari"],["Sakit",r.c.S+" hari"],["Cuti",r.c.C+" hari"],["Alpa",r.c.A+" hari"],["Insentif/gaji per hari",rp(tarif)]],total:["Total gaji ("+r.c.H+" × "+rp(tarif)+")",rp(r.pay)],kata,tgl};
+    const mn=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];const dts=s=>{const g=[];D.days.forEach((d,i)=>{if(r.cs[i]!==s)return;const [yy,mm,dd]=d.split("-").map(Number),k=yy+"-"+mm;let o=g[g.length-1];if(!o||o.k!==k){o={k,mm,a:[]};g.push(o)}o.a.push(dd)});return g.map(o=>{const ps=[];for(let i=0;i<o.a.length;){let j=i;while(j+1<o.a.length&&o.a[j+1]===o.a[j]+1)j++;ps.push(j-i>=2?o.a[i]+"–"+o.a[j]:o.a.slice(i,j+1).join(", "));i=j+1}return ps.join(", ")+(D.full?"":" "+mn[o.mm-1])}).join(", ")};const dd=s=>{const v=dts(s);return v?`<small style="color:var(--mut)"> · tgl ${v}</small>`:""};const kata=r.pay>0?terbilang(r.pay).replace(/^./,c=>c.toUpperCase())+" rupiah":"Nol rupiah";
+    SD[p.id]={nama:p.name,jab,bln,per:D.full?"":per,rows:[["Hadir",r.c.H+" hari"],["Izin",r.c.I+" hari",dts("I")],["Sakit",r.c.S+" hari",dts("S")],["Cuti",r.c.C+" hari"],["Alpa",r.c.A+" hari",dts("A")],["Gaji per hari",rp(tarif)]],total:["Total gaji ("+r.c.H+" × "+rp(tarif)+")",rp(r.pay)],kata,tgl};
     const wa=`<div class="noprint" style="margin-top:10px;border-top:1px dashed var(--bd);padding-top:8px"><input class="f" style="width:100%;margin-bottom:6px" data-ph="${esc(p.id)}" inputmode="tel" placeholder="No. WA (08xxxxxxxxxx)" value="${esc((db.phones||{})[p.id]||"")}"><div class="row"><button class="p" data-fi="${esc(p.id)}">🖼 Kirim Gambar</button></div></div>`;
-    return `<div class="slip"><div class="sh"><b>SPPG KARANGDUAK KABUPATEN SUMENEP</b>YAYASAN ABINAYA DHAKARA Indonesia</div><h3>SLIP GAJI RELAWAN</h3>
+    return `<div class="slip"><div class="sh"><b>SPPG KARANGDUAK KABUPATEN SUMENEP</b>YAYASAN ABINAYA DHAKARA INDONESIA</div><h3>SLIP GAJI RELAWAN</h3>
 <table class="inf"><tr><td class="l">Nama</td><td>: <b>${esc(p.name)}</b></td></tr><tr><td class="l">Kelompok</td><td>: ${esc(jab)}</td></tr><tr><td class="l">Bulan</td><td>: ${esc(bln)}</td></tr>${D.full?"":`<tr><td class="l">Periode</td><td>: ${esc(per)}</td></tr>`}</table>
-<table class="det"><thead><tr><th>Uraian</th><th>Jumlah</th></tr></thead><tbody><tr><td>Hadir</td><td class="r">${r.c.H} hari</td></tr><tr><td>Izin</td><td class="r">${r.c.I} hari</td></tr><tr><td>Sakit</td><td class="r">${r.c.S} hari</td></tr><tr><td>Cuti</td><td class="r">${r.c.C} hari</td></tr><tr><td>Alpa</td><td class="r">${r.c.A} hari</td></tr><tr><td>Tarif per hari</td><td class="r">${rp(tarif)}</td></tr><tr class="tot"><td>Total gaji (${r.c.H} × ${rp(tarif)})</td><td class="r">${rp(r.pay)}</td></tr></tbody></table>
+<table class="det"><thead><tr><th>Uraian</th><th>Jumlah</th></tr></thead><tbody><tr><td>Hadir</td><td class="r">${r.c.H} hari</td></tr><tr><td>Izin${dd("I")}</td><td class="r">${r.c.I} hari</td></tr><tr><td>Sakit${dd("S")}</td><td class="r">${r.c.S} hari</td></tr><tr><td>Cuti</td><td class="r">${r.c.C} hari</td></tr><tr><td>Alpa${dd("A")}</td><td class="r">${r.c.A} hari</td></tr><tr><td>Gaji per hari</td><td class="r">${rp(tarif)}</td></tr><tr class="tot"><td>Total gaji (${r.c.H} × ${rp(tarif)})</td><td class="r">${rp(r.pay)}</td></tr></tbody></table>
 <div class="tb">Terbilang: ${esc(kata)}</div>
-<div class="sg"><div></div><div>Sumenep, ${tgl}<br>Akuntan<br><br><br><br><b>ANISA CINDY WIJAYA</b></div></div>${wa}</div>`};
+<div class="sg"><div></div><div>Sumenep, ${tgl}<br>Akuntan<br><br><br><br><b>ANISA CINDY WIJAYA S.Ak</b></div></div>${wa}</div>`};
   const w=$("slw");
   w.innerHTML=`<div class="row noprint" style="justify-content:space-between;margin-bottom:10px"><b>🧾 Slip Gaji · ${items.length} slip</b><span class="row"><button id="slall" class="p">📨 Kirim Semua via WA</button><button id="slprint">🖨 Cetak Slip</button><button id="slx">Tutup</button></span></div><div class="row noprint" style="margin-bottom:10px"><input class="f" id="ftk" type="password" autocomplete="off" placeholder="Token Fonnte (disimpan di browser ini saja)"></div><div id="slst" class="noprint"></div><div class="slg">${items.length?items.map(one).join(""):'<div class="empty">Tidak ada relawan.</div>'}</div>`;
   w.style.display="";$("slall").onclick=sendAll;$("ftk").value=getTk();$("ftk").oninput=()=>{try{localStorage.setItem("fonnteToken",$("ftk").value.trim())}catch(e){}};paintSend();
