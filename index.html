@@ -45,7 +45,9 @@ button.p{background:var(--pri);color:#fff;border-color:var(--pri)}
 .nm{display:flex;align-items:center;gap:10px;cursor:pointer}.cb{width:24px;height:24px;accent-color:var(--H);flex:none;cursor:pointer}
 .empty{color:var(--mut);text-align:center;padding:16px}
 .sign{display:none}
+@page{size:auto;margin:0}
 @media print{
+ html,body{margin:0!important}body{padding:10mm 12mm!important}
  body{background:#fff;color:#000}.noprint{display:none!important}
  .card{border:0;padding:0}.sign{display:block;margin-top:24px;font-size:12px}
  .sign td{padding:6px 12px;height:40px}.x,.ctl button{display:none}
@@ -148,7 +150,13 @@ html{-webkit-text-size-adjust:100%}
  .slip{border:1px solid #000;background:#fff;color:#000;font-size:10.5px;padding:10px 12px}
  .slip .sh,.slip .tb,.slip table.inf td.l{color:#333}
  .slip table.det th,.slip table.det tr.tot td{background:#eee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
- .slg{gap:8px}
+ body.ps{padding:5mm!important}
+ body.ps #slw{padding:0!important;border:0!important}
+ body.ps .slg{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:143mm;gap:0}
+ body.ps .slip{box-sizing:border-box;height:143mm;overflow:hidden;border:0;border-top:1px dashed #777;border-left:1px dashed #777;padding:10mm 9mm;break-inside:avoid}
+ body.ps .slip:nth-child(2n){border-right:1px dashed #777}
+ body.ps .slip:nth-child(4n+3),body.ps .slip:nth-child(4n+4){border-bottom:1px dashed #777}
+ body.ps .slip:last-child{border-bottom:1px dashed #777}
 }
 </style>
 </head>
@@ -171,7 +179,7 @@ html{-webkit-text-size-adjust:100%}
 </div>
 </div>
 <div id="v2" style="display:none">
-<div class="card noprint"><div class="rk-grid"><div class="fld"><label for="rm">📅 Bulan (pilih cepat)</label><input type="month" id="rm"></div><div class="fld"><label for="rf1">Dari tanggal</label><input type="date" id="rf1"></div><div class="fld"><label for="rf2">Sampai tanggal</label><input type="date" id="rf2"></div><div class="fld"><label for="rr">Gaji anggota / hari</label><input type="text" inputmode="numeric" id="rr"></div><div class="fld"><label for="rk">Gaji koordinator / hari</label><input type="text" inputmode="numeric" id="rk"></div><div class="fld"><label for="rl">Gaji Asisten Lapangan / hari</label><input type="text" inputmode="numeric" id="rl"></div><div class="fld"><label for="sp">Slip gaji untuk</label><select id="sp"></select></div></div><div class="rk-act"><button id="slp">🧾 Slip Gaji</button><button id="csv">⬇ Unduh CSV</button><button id="rp" class="p">🖨 Cetak Rekap</button></div></div>
+<div class="card noprint"><div class="rk-grid"><div class="fld"><label for="rm">📅 Bulan (pilih cepat)</label><input type="month" id="rm"></div><div class="fld"><label for="rf1">Dari tanggal</label><input type="date" id="rf1"></div><div class="fld"><label for="rf2">Sampai tanggal</label><input type="date" id="rf2"></div><div class="fld"><label for="rr">Gaji anggota / hari</label><input type="text" inputmode="numeric" id="rr"></div><div class="fld"><label for="rk">Gaji koordinator / hari</label><input type="text" inputmode="numeric" id="rk"></div><div class="fld"><label for="rl">Gaji Asisten Lapangan / hari</label><input type="text" inputmode="numeric" id="rl"></div><div class="fld"><label for="sp">Slip gaji untuk</label><select id="sp"></select></div></div><div class="rk-act"><button id="slp">🧾 Slip Gaji</button><button id="csv">⬇ Unduh Excel</button><button id="rp" class="p">🖨 Cetak Rekap</button></div></div>
 <div class="card" style="overflow-x:auto"><div id="rt"></div></div>
 <div id="slw" class="card" style="display:none"></div>
 <div class="card row noprint"><span style="font-size:12px;color:var(--mut);flex:1;min-width:160px">Data tersimpan di database (Supabase) dan dipakai bersama semua admin. Backup berkala tetap disarankan. Pulihkan juga dipakai untuk memindahkan data dari versi lama.</span><button id="bk">💾 Backup</button><button id="rs">📂 Pulihkan</button><input type="file" id="rf" accept=".json,application/json" hidden></div>
@@ -286,7 +294,35 @@ function rekap(){
 }
 function tab(v){view=v;$("v1").style.display=v===1?"":"none";$("v2").style.display=v===2?"":"none";$("t1").className=v===1?"p":"";$("t2").className=v===2?"p":"";if(v===2){if(!$("rm").value)$("rm").value=$("d").value.slice(0,7);$("rr").value=fmtIn(db.rate==null?110000:db.rate);$("rk").value=fmtIn(db.rateK==null?num($("rr").value):db.rateK);$("rl").value=fmtIn(db.rateL==null?num($("rk").value):db.rateL);rekap();fillSp()}else render()}
 $("t1").onclick=()=>tab(1);$("t2").onclick=()=>tab(2);$("rm").onchange=()=>{if($("rm").value)setRange($("rm").value);rekap()};$("rf1").onchange=$("rf2").onchange=rekap;$("rr").oninput=()=>{db.rate=rupInput($("rr"));if(db.rateK==null)$("rk").value=$("rr").value;saveRate("rate");rekap()};$("rk").oninput=()=>{db.rateK=rupInput($("rk"));if(db.rateL==null)$("rl").value=$("rk").value;saveRate("rateK");rekap()};$("rl").oninput=()=>{db.rateL=rupInput($("rl"));saveRate("rateL");rekap()};$("rp").onclick=()=>{document.body.classList.remove("ps");try{window.print()}catch(e){}};
-$("csv").onclick=()=>{const D=rekapData(),q=s=>'"'+String(s).replace(/"/g,'""')+'"';const out=[["Kelompok","Nama",...D.days.map((d,i)=>i+1),"Hadir","Izin","Sakit","Cuti","Alpa","%Hadir","Gaji"].map(q).join(";")];D.groups.forEach(x=>x.list.forEach(p=>{const r=D.rows(p);out.push([GR[x.g]||"-",p.name,...r.cs,r.c.H,r.c.I,r.c.S,r.c.C,r.c.A,r.pct,r.pay].map(q).join(";"))}));dlf("rekap-absensi-"+D.ym+".csv","﻿"+out.join("\r\n"),"text/csv")};
+$("csv").onclick=()=>{const D=rekapData(),nd=D.days.length,nc=nd+9;
+  const bln=new Date(D.y,D.m-1,1).toLocaleDateString("id-ID",{month:"long",year:"numeric"}).toUpperCase();
+  const fdt=t=>{const [yy,mm,dd]=t.split("-").map(Number);return new Date(yy,mm-1,dd).toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"})};
+  const per=D.full?bln:fdt(D.a)+" s.d. "+fdt(D.b);
+  const col={H:["#e6f4ea","#137333","H"],I:["#e8f0fe","#1a56db","I"],S:["#f3e8fd","#7b1fa2","S"],C:["#e0f7f6","#00796b","Ct"],A:["#fce8e6","#c5221f","A"]};
+  const bd="border:.5pt solid #9aa0a6;";
+  const th=(t,ex)=>`<td style="${bd}background:#1f3a5f;color:#ffffff;font-weight:bold;text-align:center;vertical-align:middle;${ex||""}">${esc(t)}</td>`;
+  let tot={H:0,I:0,S:0,C:0,A:0,pay:0},body="",no=0;
+  D.groups.forEach(x=>{
+    body+=`<tr><td colspan="${nc}" style="${bd}background:#dbe4f0;font-weight:bold;color:#1f3a5f">${esc(GR[x.g]||"-")}</td></tr>`;
+    x.list.forEach(p=>{const r=D.rows(p);no++;Object.keys(tot).forEach(k=>{if(k==="pay")tot.pay+=r.pay;else tot[k]+=r.c[k]});
+      body+=`<tr><td style="${bd}text-align:center">${no}</td><td style="${bd}white-space:nowrap">${esc(p.name)}${r.isK?" (Koord.)":""}</td>`
+        +r.cs.map(s=>{const c=col[s];return c?`<td style="${bd}text-align:center;background:${c[0]};color:${c[1]};font-weight:bold">${c[2]}</td>`:`<td style="${bd}"></td>`}).join("")
+        +[r.c.H,r.c.I,r.c.S,r.c.C,r.c.A].map(v=>`<td style="${bd}text-align:center;font-weight:bold">${v}</td>`).join("")
+        +`<td style="${bd}text-align:center">${esc(r.pct)}</td><td style="${bd}text-align:right;mso-number-format:'#,##0';font-weight:bold">${r.pay}</td></tr>`});
+  });
+  const tc="background:#1f3a5f;color:#ffffff;font-weight:bold;";
+  const totRow=`<tr><td colspan="${nd+2}" style="${bd}${tc}text-align:right">TOTAL</td>`+[tot.H,tot.I,tot.S,tot.C,tot.A].map(v=>`<td style="${bd}${tc}text-align:center">${v}</td>`).join("")+`<td style="${bd}${tc}"></td><td style="${bd}${tc}text-align:right;mso-number-format:'#,##0'">${tot.pay}</td></tr>`;
+  const head=`<tr style="height:24pt">${th("No","width:32px")}${th("Nama","width:200px")}${D.days.map((d,i)=>th(i+1,"width:26px")).join("")}${["Hadir","Izin","Sakit","Cuti","Alpa","% Hadir"].map(t=>th(t,"width:48px")).join("")}${th("Gaji (Rp)","width:90px")}</tr>`;
+  const tgl=new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+  const html=`\ufeff<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Rekap Absensi</x:Name><x:WorksheetOptions><x:Print><x:FitWidth>1</x:FitWidth><x:ValidPrinterInfo/><x:PaperSizeIndex>9</x:PaperSizeIndex></x:Print></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><style>@page{mso-page-orientation:landscape}table{border-collapse:collapse}td{font-family:Calibri,Arial,sans-serif;font-size:10pt;vertical-align:middle}</style></head><body><table>`
+   +`<tr><td colspan="${nc}" style="font-size:16pt;font-weight:bold;text-align:center;color:#1f3a5f">REKAP ABSENSI RELAWAN SPPG KARANGDUAK</td></tr>`
+   +`<tr><td colspan="${nc}" style="font-size:11pt;text-align:center">Satuan Pelayanan Pemenuhan Gizi Karangduak, Kabupaten Sumenep \u00b7 Yayasan Abinaya Dhakara Indonesia</td></tr>`
+   +`<tr><td colspan="${nc}" style="font-size:12pt;font-weight:bold;text-align:center">Periode: ${esc(per)}</td></tr><tr><td colspan="${nc}"></td></tr>`
+   +head+body+totRow
+   +`<tr><td colspan="${nc}"></td></tr><tr><td colspan="${nc}" style="font-size:9pt;color:#5f6368">Keterangan: H = Hadir, I = Izin, S = Sakit, Ct = Cuti, A = Alpa \u00b7 % Hadir = Hadir \u00f7 hari tercatat (${D.filled} hari)</td></tr>`
+   +`<tr><td colspan="${nc}" style="font-size:9pt;color:#5f6368">Dicetak: ${tgl}</td></tr></table></body></html>`;
+  dlf("rekap-absensi-"+D.ym+".xls",html,"application/vnd.ms-excel")};
+const _csvLama=()=>{const D=rekapData(),q=s=>'"'+String(s).replace(/"/g,'""')+'"';const out=[["Kelompok","Nama",...D.days.map((d,i)=>i+1),"Hadir","Izin","Sakit","Cuti","Alpa","%Hadir","Gaji"].map(q).join(";")];D.groups.forEach(x=>x.list.forEach(p=>{const r=D.rows(p);out.push([GR[x.g]||"-",p.name,...r.cs,r.c.H,r.c.I,r.c.S,r.c.C,r.c.A,r.pct,r.pay].map(q).join(";"))}));dlf("rekap-absensi-"+D.ym+".csv","﻿"+out.join("\r\n"),"text/csv")};
 $("bk").onclick=()=>dlf("backup-absensi-"+todayStr()+".json",JSON.stringify(db),"application/json");
 $("rs").onclick=()=>$("rf").click();
 $("rf").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{let j;try{j=JSON.parse(r.result);if(!j||!Array.isArray(j.people)||typeof j.records!=="object")throw 0}catch(x){alert("File backup tidak valid.");return}ask("Impor data dari file backup? Data dengan nama/tanggal yang sama akan ditimpa, data lain tetap ada.",()=>importBackup(j))};r.readAsText(f);e.target.value=""};
