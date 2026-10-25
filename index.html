@@ -502,14 +502,22 @@ function slip(){
 <div class="tb">Terbilang: ${esc(kata)}</div>
 <div class="sg"><div></div><div>Sumenep, ${tgl}<br>Akuntan<br><img src="${SIG.src}" alt="" style="display:block;height:54px;width:auto;margin:-2px auto -6px"><b>ANISA CINDY WIJAYA S.Ak</b></div></div>${wa}</div>`};
   const w=$("slw");
-  w.innerHTML=`<div class="row noprint" style="justify-content:space-between;margin-bottom:10px"><b>🧾 Slip Gaji · ${items.length} slip</b><span class="row"><button id="slpub" class="p">☁ Terbitkan Slip</button><button id="slq">💬 Satu per Satu</button><button id="slprint">🖨 Cetak Slip</button><button id="slx">Tutup</button></span></div><div class="row noprint" style="margin-bottom:10px"><input class="f" id="bu" placeholder="Alamat aplikasi untuk link slip" style="flex:1;min-width:200px"><label style="font-size:13px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="fl"> Sertakan rincian lengkap</label></div><div class="row noprint" style="margin-bottom:10px"><input class="f" id="shu" placeholder="Link Google Sheet (Apps Script web app)" style="flex:1;min-width:200px"><button id="shget">⬇ Ambil Nomor</button><button id="shnm">📋 Salin Nama</button></div><div id="shmsg" class="noprint"></div><div id="sst" class="noprint"></div><div id="slst" class="noprint"></div><div class="slg">${items.length?items.map(one).join(""):'<div class="empty">Tidak ada relawan.</div>'}</div>`;
+  w.innerHTML=`<div class="row noprint" style="justify-content:space-between;margin-bottom:10px"><b>🧾 Slip Gaji · ${items.length} slip</b><span class="row"><button id="slpub" class="p">☁ Terbitkan Slip</button><button id="slq">💬 Satu per Satu</button><button id="slprint">🖨 Cetak Slip</button><button id="slx">Tutup</button></span></div><div class="row noprint" style="margin-bottom:10px"><input class="f" id="bu" placeholder="Alamat aplikasi untuk link slip" style="flex:1;min-width:200px"><label style="font-size:13px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="fl"> Sertakan rincian lengkap</label></div><div class="row noprint" style="margin-bottom:10px"><input class="f" id="shu" placeholder="Link Google Sheet (Apps Script web app)" style="flex:1;min-width:200px"><button id="shget">⬇ Ambil Nomor</button><button id="shnm">📤 Kirim Nama ke Sheet</button></div><div id="shmsg" class="noprint"></div><div id="sst" class="noprint"></div><div id="slst" class="noprint"></div><div class="slg">${items.length?items.map(one).join(""):'<div class="empty">Tidak ada relawan.</div>'}</div>`;
   w.style.display="";$("slpub").onclick=terbitkan;$("slq").onclick=startQ;paintQ();
   try{$("shu").value=localStorage.getItem("sheetUrl")||""}catch(e){}
   $("shu").oninput=()=>{try{localStorage.setItem("sheetUrl",$("shu").value.trim())}catch(e){}};
   $("shget").onclick=getSheet;
   try{$("bu").value=localStorage.getItem("baseUrl")||(/^https?:$/.test(location.protocol)?location.origin+location.pathname:"https://ichsankrd.github.io/absen/")}catch(e){}
   $("bu").oninput=()=>{try{localStorage.setItem("baseUrl",$("bu").value.trim())}catch(e){}};
-  $("shnm").onclick=async()=>{const t=Object.values(slipData).map(d=>d.nama).join("\n");try{await navigator.clipboard.writeText(t);toast("Daftar nama disalin. Tempel di kolom A Google Sheet.",true)}catch(e){toast("Gagal menyalin. Izinkan akses clipboard di browser.")}};
+  $("shnm").onclick=async()=>{const u=$("shu").value.trim(),id=scriptId(u),m=$("shmsg");
+    if(!id){toast("Isi dulu link web app Google Apps Script.");return}
+    let key="";try{key=new URL(u).searchParams.get("key")||""}catch(e){}
+    if(!key){toast("Tambahkan ?key=KUNCI di akhir link Apps Script.");return}
+    m.style.cssText="font-size:13px;margin-bottom:10px;";m.textContent="Mengirim nama ke Google Sheet\u2026";
+    try{const r=await fetch(execUrl(id),{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key,action:"nama",names:Object.values(slipData).map(d=>d.nama)})}),j=await r.json();
+      if(!j.ok)throw new Error(j.error||"ditolak");
+      m.innerHTML=`\u2705 <b>${j.added}</b> nama baru ditambahkan (total ${j.total}). <a href="${esc(j.url)}" target="_blank" rel="noopener">Buka Sheet &amp; isi nomor WA</a>`}
+    catch(e){m.textContent="Gagal: "+(e.message||e)}};
   $("slprint").onclick=()=>{document.body.classList.add("ps");try{window.print()}catch(e){}setTimeout(()=>document.body.classList.remove("ps"),1500)};
   $("slx").onclick=()=>{qq=null;w.style.display="none";document.body.classList.remove("ps")};
 }
