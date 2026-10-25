@@ -450,7 +450,7 @@ async function viewForm(id){
       viewSlip(arrD(j.data))}
     catch(e){vm("Gagal terhubung. Coba lagi.");$("vg").disabled=false}}}
 async function terbitkan(){
-  const u=$("shu").value.trim(),id=scriptId(u),m=$("sst"),bx='<div style="border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:10px;font-size:13px">';
+  const u=$("shu").value.trim(),id=scriptId(u),m=$("pst"),bx='<div style="border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:10px;font-size:13px">';
   if(!id){toast("Isi dulu link web app Google Apps Script.");return}
   let key="";try{key=new URL(u).searchParams.get("key")||""}catch(e){}
   if(!key){toast("Tambahkan ?key=KUNCI di akhir link Apps Script.");return}
@@ -502,7 +502,7 @@ function slip(){
 <div class="tb">Terbilang: ${esc(kata)}</div>
 <div class="sg"><div></div><div>Sumenep, ${tgl}<br>Akuntan<br><img src="${SIG.src}" alt="" style="display:block;height:54px;width:auto;margin:-2px auto -6px"><b>ANISA CINDY WIJAYA S.Ak</b></div></div>${wa}</div>`};
   const w=$("slw");
-  w.innerHTML=`<div class="row noprint" style="justify-content:space-between;margin-bottom:10px"><b>🧾 Slip Gaji · ${items.length} slip</b><span class="row"><button id="slpub" class="p">☁ Terbitkan Slip</button><button id="slq">💬 Satu per Satu</button><button id="slprint">🖨 Cetak Slip</button><button id="slx">Tutup</button></span></div><div class="row noprint" style="margin-bottom:10px"><input class="f" id="bu" placeholder="Alamat aplikasi untuk link slip" style="flex:1;min-width:200px"><label style="font-size:13px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="fl"> Sertakan rincian lengkap</label></div><div class="row noprint" style="margin-bottom:10px"><input class="f" id="shu" placeholder="Link Google Sheet (Apps Script web app)" style="flex:1;min-width:200px"><button id="shget">⬇ Ambil Nomor</button><button id="shnm">📤 Kirim Nama ke Sheet</button></div><div id="shmsg" class="noprint"></div><div id="sst" class="noprint"></div><div id="slst" class="noprint"></div><div class="slg">${items.length?items.map(one).join(""):'<div class="empty">Tidak ada relawan.</div>'}</div>`;
+  w.innerHTML=`<div class="row noprint" style="justify-content:space-between;margin-bottom:10px"><b>🧾 Slip Gaji · ${items.length} slip</b><span class="row"><button id="slpub" class="p">☁ Terbitkan Slip</button><button id="slq">💬 Satu per Satu</button><button id="slprint">🖨 Cetak Slip</button><button id="slx">Tutup</button></span></div><div class="row noprint" style="margin-bottom:10px"><input class="f" id="bu" placeholder="Alamat aplikasi untuk link slip" style="flex:1;min-width:200px"><label style="font-size:13px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="fl"> Sertakan rincian lengkap</label></div><div class="row noprint" style="margin-bottom:10px"><input class="f" id="shu" placeholder="Link Google Sheet (Apps Script web app)" style="flex:1;min-width:200px"><button id="shget">⬇ Ambil Nomor</button><button id="shnm">📤 Kirim Nama ke Sheet</button></div><div id="shmsg" class="noprint"></div><div id="pst" class="noprint"></div><div id="slst" class="noprint"></div><div class="slg">${items.length?items.map(one).join(""):'<div class="empty">Tidak ada relawan.</div>'}</div>`;
   w.style.display="";$("slpub").onclick=terbitkan;$("slq").onclick=startQ;paintQ();
   try{$("shu").value=localStorage.getItem("sheetUrl")||""}catch(e){}
   $("shu").oninput=()=>{try{localStorage.setItem("sheetUrl",$("shu").value.trim())}catch(e){}};
