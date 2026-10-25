@@ -436,7 +436,7 @@ async function viewForm(id){
   document.title="Slip Gaji Relawan";
   $("login").style.display="none";$("app").style.display="none";
   const v=$("sv");v.style.display="";
-  v.innerHTML=`<div class="card" style="max-width:420px;margin:24px auto"><p style="margin:0 0 2px;font-weight:700;text-align:center;color:#1f3a5f;letter-spacing:.12em">SLIP GAJI RELAWAN</p><p style="margin:0 0 14px;text-align:center;font-size:12px;color:var(--mut)">SPPG Karangduak Kabupaten Sumenep</p><div class="fld"><label for="vn">Nama</label><select id="vn" class="f"><option value="">Memuat daftar nama\u2026</option></select></div><div class="fld"><label for="vp">PIN (4 digit terakhir nomor WA Anda)</label><input id="vp" class="f" type="password" inputmode="numeric" autocomplete="off"></div><button class="p" id="vg" style="width:100%">Lihat Slip</button><div id="vm" style="margin-top:10px;font-size:13px;color:var(--mut);text-align:center"></div></div>`;
+  v.innerHTML=`<div class="card" style="max-width:420px;margin:24px auto"><p style="margin:0 0 2px;font-weight:700;text-align:center;color:#1f3a5f;letter-spacing:.12em">SLIP GAJI RELAWAN</p><p style="margin:0 0 14px;text-align:center;font-size:12px;color:var(--mut)">SPPG Karangduak Kabupaten Sumenep</p><div class="fld"><label for="vn">Nama</label><select id="vn" class="f"><option value="">Memuat daftar nama\u2026</option></select></div><div class="fld"><label for="vp">PIN</label><input id="vp" class="f" type="password" inputmode="numeric" autocomplete="off"></div><button class="p" id="vg" style="width:100%">Lihat Slip</button><div id="vm" style="margin-top:10px;font-size:13px;color:var(--mut);text-align:center"></div></div>`;
   const vm=t=>{$("vm").textContent=t};
   try{const r=await fetch(execUrl(id)+"?action=names"),j=await r.json();if(!j.ok)throw new Error(j.error||"gagal");
     $("vn").innerHTML='<option value="">\u2014 pilih nama \u2014</option>'+j.names.map(n=>`<option>${esc(n)}</option>`).join("");
@@ -455,7 +455,7 @@ async function terbitkan(){
   let key="";try{key=new URL(u).searchParams.get("key")||""}catch(e){}
   if(!key){toast("Tambahkan ?key=KUNCI di akhir link Apps Script.");return}
   if(!baseUrl()){toast("Isi dulu alamat aplikasi untuk link slip.");return}
-  const slips=Object.values(slipData).map(d=>({nama:d.nama,data:[d.nama,d.jab,d.bln,d.per,d.rows,d.total,d.kata,d.tgl]}));
+  const slips=Object.keys(slipData).map(id=>{const d=slipData[id],inp=$("slw").querySelector('input[data-ph="'+id+'"]'),wa=String((inp?inp.value:(db.phones||{})[id])||"").trim();return{nama:d.nama,wa,data:[d.nama,d.jab,d.bln,d.per,d.rows,d.total,d.kata,d.tgl]}});
   if(!slips.length){toast("Tidak ada slip.");return}
   const bulan=slips[0].data[2];
   m.innerHTML=bx+"Menerbitkan "+slips.length+" slip ke Google Sheet\u2026</div>";
