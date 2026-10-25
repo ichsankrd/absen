@@ -86,7 +86,7 @@ html{-webkit-text-size-adjust:100%}
  input,select{font-size:16px;min-height:40px}
  button{min-height:40px;font-size:14px;padding:8px 12px}
  .row{gap:6px}
- .row>button#t1,.row>button#t2{flex:1}
+ .row>button#t1,.row>button#t2,.row>button#t3{flex:1}
  /* tanggal */
  #v1>.card.row:first-child{display:grid;grid-template-columns:auto 1fr auto;gap:6px}
  #v1>.card.row:first-child label{grid-column:1/-1}
@@ -175,7 +175,7 @@ html{-webkit-text-size-adjust:100%}
 <div id="sv" style="display:none"></div>
 <div id="app" style="display:none">
 <div class="card row noprint" style="justify-content:space-between;font-size:12px;color:var(--mut);padding:8px 12px"><span id="who"></span><span id="sst"></span><button id="lo" style="min-height:0;padding:4px 10px">Keluar</button></div>
-<div class="card row noprint"><button id="t1" class="p">✅ Absensi</button><button id="t2">📊 Rekap</button></div>
+<div class="card row noprint"><button id="t1" class="p">✅ Absensi</button><button id="t2">📊 Rekap</button><button id="t3">👥 Kelola</button></div>
 <div id="v1">
 <div class="card row noprint"><label for="d" style="color:var(--mut)">Tanggal</label><button id="pv" title="Hari sebelumnya">◀</button><input type="date" id="d"><button id="nx" title="Hari berikutnya">▶</button><button id="td">Hari ini</button><button id="prt" class="p" style="margin-left:auto">🖨 Cetak</button></div>
 <div id="dl" style="text-align:center;font-size:13px;font-weight:600;margin:-4px 0 12px"></div>
@@ -191,6 +191,10 @@ html{-webkit-text-size-adjust:100%}
 <div class="card" style="overflow-x:auto"><div id="rt"></div></div>
 <div id="slw" class="card" style="display:none"></div>
 <div class="card row noprint"><span style="font-size:12px;color:var(--mut);flex:1;min-width:160px">Data tersimpan di database (Supabase) dan dipakai bersama semua admin. Backup berkala tetap disarankan. Pulihkan juga dipakai untuk memindahkan data dari versi lama.</span><button id="bk">💾 Backup</button><button id="rs">📂 Pulihkan</button><input type="file" id="rf" accept=".json,application/json" hidden></div>
+</div>
+<div id="v3" style="display:none">
+<div class="card noprint"><p style="margin:0 0 4px;font-weight:600">Kelola Relawan</p><p style="margin:0 0 10px;font-size:12px;color:var(--mut)">Menu ini khusus untuk menghapus relawan. Menghapus relawan juga menghapus seluruh riwayat absensinya dan tidak bisa dikembalikan. Pakai Backup di tab Rekap sebelum menghapus.</p><div class="row"><input class="f" id="mq" placeholder="Cari nama relawan"><span id="mcount" style="font-size:12px;color:var(--mut)"></span></div></div>
+<div class="card noprint"><div id="mlist"></div></div>
 </div>
 <div id="dlg" class="noprint"><div class="card" style="max-width:320px;margin:16px"><p id="dm" style="margin-top:0"></p><div class="row" style="justify-content:flex-end"><button id="dn">Batal</button><button id="dy" class="p" style="background:var(--A);border-color:var(--A)">Ya, lanjutkan</button></div></div></div>
 <div id="edlg" class="noprint"><div class="card" style="max-width:320px;width:100%;margin:16px"><p style="margin-top:0;font-weight:600">Edit nama relawan</p><input id="en" style="width:100%;margin-bottom:10px"><div class="row" style="justify-content:flex-end"><button id="ec">Batal</button><button id="es" class="p">Simpan</button></div></div></div>
@@ -222,7 +226,7 @@ async function loadAll(){
 async function run(p){try{const {error}=await p;if(error)throw error;setSt("Tersimpan ✓")}catch(e){toast("Gagal menyimpan: "+(e.message||e));setSt("Gagal menyimpan","var(--A)");try{await loadAll();refresh()}catch(x){}}}
 const setS=(k,v)=>run(sb.from("settings").upsert({key:k,value:v}));
 const saveRate=(()=>{const t={};return k=>{clearTimeout(t[k]);t[k]=setTimeout(()=>setS(k,db[k]),600)}})();
-const refresh=debounce(()=>{render();if(view===2)rekap();autoSync()},150);
+const refresh=debounce(()=>{render();if(view===2)rekap();if(view===3)renderMgr();autoSync()},150);
 const reloadSmall=debounce(async()=>{try{const [pp,ss]=await Promise.all([fetchAll("people","id,name,g",["id"]),sb.from("settings").select("key,value")]);applyPeople(pp);applySettings(ss.data||[]);refresh()}catch(e){}},300);
 function subscribe(){if(ch)return;try{ch=sb.channel("absensi").on("postgres_changes",{event:"*",schema:"public",table:"records"},pl=>{const n=pl.new||{},o=pl.old||{};if(pl.eventType==="DELETE"){if(db.records[o.date])delete db.records[o.date][o.person_id]}else{(db.records[n.date]=db.records[n.date]||{})[n.person_id]={s:n.status}}refresh()}).on("postgres_changes",{event:"*",schema:"public",table:"people"},reloadSmall).on("postgres_changes",{event:"*",schema:"public",table:"settings"},reloadSmall).subscribe()}catch(e){}}
 let cb=null,eid=null;
@@ -300,8 +304,28 @@ function rekap(){
   const body=D.groups.map(x=>`<tr class="g"><td colspan="${D.nd+9}">${GR[x.g]||"Belum dikelompokkan"}</td></tr>`+x.list.map(p=>{const r=D.rows(p);n++;return `<tr><td>${n}</td><td class="n">${esc(p.name)}${r.isK?" <b>(Koord.)</b>":""}</td>${r.cs.map(s=>`<td style="color:var(--${s||"mut"})">${s==="C"?"Ct":s}</td>`).join("")}<td class="t">${r.c.H}</td><td class="t">${r.c.I}</td><td class="t">${r.c.S}</td><td class="t">${r.c.C}</td><td class="t">${r.c.A}</td><td class="t">${r.pct}</td><td class="t" style="text-align:right;white-space:nowrap">${rp(r.pay)}</td></tr>`}).join("")).join("");
   $("rt").innerHTML=`<h2 style="font-size:15px;text-align:center;margin:0 0 4px">REKAP ABSENSI RELAWAN SPPG KARANGDUAK<br>${bln}</h2><table class="rt"><thead>${th}</thead><tbody>${body}${tot}</tbody></table>`;
 }
-function tab(v){view=v;$("v1").style.display=v===1?"":"none";$("v2").style.display=v===2?"":"none";$("t1").className=v===1?"p":"";$("t2").className=v===2?"p":"";if(v===2){if(!$("rm").value)$("rm").value=$("d").value.slice(0,7);$("rr").value=fmtIn(db.rate==null?110000:db.rate);$("rk").value=fmtIn(db.rateK==null?num($("rr").value):db.rateK);$("rl").value=fmtIn(db.rateL==null?num($("rk").value):db.rateL);rekap();fillSp()}else render()}
-$("t1").onclick=()=>tab(1);$("t2").onclick=()=>tab(2);$("rm").onchange=()=>{if($("rm").value)setRange($("rm").value);rekap()};$("rf1").onchange=$("rf2").onchange=rekap;$("rr").oninput=()=>{db.rate=rupInput($("rr"));if(db.rateK==null)$("rk").value=$("rr").value;saveRate("rate");rekap()};$("rk").oninput=()=>{db.rateK=rupInput($("rk"));if(db.rateL==null)$("rl").value=$("rk").value;saveRate("rateK");rekap()};$("rl").oninput=()=>{db.rateL=rupInput($("rl"));saveRate("rateL");rekap()};$("rp").onclick=()=>{document.body.classList.remove("ps");try{window.print()}catch(e){}};
+function tab(v){view=v;$("v1").style.display=v===1?"":"none";$("v2").style.display=v===2?"":"none";$("v3").style.display=v===3?"":"none";$("t1").className=v===1?"p":"";$("t2").className=v===2?"p":"";$("t3").className=v===3?"p":"";if(v===3)renderMgr();if(v===2){if(!$("rm").value)$("rm").value=$("d").value.slice(0,7);$("rr").value=fmtIn(db.rate==null?110000:db.rate);$("rk").value=fmtIn(db.rateK==null?num($("rr").value):db.rateK);$("rl").value=fmtIn(db.rateL==null?num($("rk").value):db.rateL);rekap();fillSp()}else render()}
+$("t1").onclick=()=>tab(1);$("t2").onclick=()=>tab(2);$("t3").onclick=()=>tab(3);
+function renderMgr(){const q=($("mq").value||"").toLowerCase();
+  const L=db.people.filter(p=>!q||p.name.toLowerCase().includes(q));
+  $("mcount").textContent=db.people.length+" relawan";
+  $("mlist").innerHTML=L.length?L.map((p,i)=>`<div class="p-row"><div class="no">${i+1}</div><div class="nm" style="cursor:default;justify-content:space-between"><span>${esc(p.name)}<small>${esc(GR[p.g||""]||"Belum dikelompokkan")}</small></span><button class="x" data-del="${esc(p.id)}" style="color:var(--A);border-color:var(--A)">🗑 Hapus</button></div></div>`).join(""):'<div class="empty">Tidak ada relawan.</div>'}
+function delPerson(id){const p=db.people.find(x=>x.id===id);if(!p)return;
+  ask('Hapus "'+p.name+'" dari daftar relawan? Seluruh riwayat absensinya juga ikut terhapus dan tidak bisa dikembalikan.',async()=>{
+    db.people=db.people.filter(x=>x.id!==id);
+    Object.keys(db.records).forEach(d=>{if(db.records[d])delete db.records[d][id]});
+    let c=false;Object.keys(db.coord||{}).forEach(g=>{if(db.coord[g]===id){delete db.coord[g];c=true}});
+    if(db.phones)delete db.phones[id];
+    renderMgr();render();setSt("Menghapus…");
+    try{
+      let r=await sb.from("records").delete().eq("person_id",id);if(r.error)throw r.error;
+      r=await sb.from("people").delete().eq("id",id);if(r.error)throw r.error;
+      await sb.from("settings").delete().eq("key","phone:"+id);
+      if(c){r=await sb.from("settings").upsert({key:"coord",value:db.coord});if(r.error)throw r.error}
+      setSt("Tersimpan ✓");toast("Relawan dihapus.",true)
+    }catch(e){toast("Gagal menghapus: "+(e.message||e));setSt("Gagal menghapus","var(--A)");try{await loadAll()}catch(x){}renderMgr();render()}})}
+$("mlist").onclick=e=>{const b=e.target.closest("button[data-del]");if(b)delPerson(b.dataset.del)};
+$("mq").oninput=renderMgr;$("rm").onchange=()=>{if($("rm").value)setRange($("rm").value);rekap()};$("rf1").onchange=$("rf2").onchange=rekap;$("rr").oninput=()=>{db.rate=rupInput($("rr"));if(db.rateK==null)$("rk").value=$("rr").value;saveRate("rate");rekap()};$("rk").oninput=()=>{db.rateK=rupInput($("rk"));if(db.rateL==null)$("rl").value=$("rk").value;saveRate("rateK");rekap()};$("rl").oninput=()=>{db.rateL=rupInput($("rl"));saveRate("rateL");rekap()};$("rp").onclick=()=>{document.body.classList.remove("ps");try{window.print()}catch(e){}};
 $("csv").onclick=()=>{const D=rekapData(),nd=D.days.length,nc=nd+9;
   const bln=new Date(D.y,D.m-1,1).toLocaleDateString("id-ID",{month:"long",year:"numeric"}).toUpperCase();
   const fdt=t=>{const [yy,mm,dd]=t.split("-").map(Number);return new Date(yy,mm-1,dd).toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"})};
@@ -540,7 +564,7 @@ $("slw").onclick=async e=>{const t=e.target.closest("button[data-ft]");if(t){con
 window.addEventListener("afterprint",()=>document.body.classList.remove("ps"));
 {const _rk=rekap;rekap=function(){_rk();if($("slw").style.display==="none")return;const a=document.activeElement;if(a&&a.dataset&&a.dataset.ph&&$("slw").contains(a))syncPh();else slip()}}
 function showLogin(msg){$("app").style.display="none";$("login").style.display="";$("lm").textContent=msg||"";db={people:[],records:{},coord:{},rate:null,rateK:null,rateL:null};if(ch&&sb){try{sb.removeChannel(ch)}catch(e){}ch=null}}
-async function enter(user){$("login").style.display="none";$("app").style.display="";$("who").textContent="👤 "+(user&&user.email||"");setSt("Memuat…");try{await loadAll();setSt("Tersambung ✓")}catch(e){toast("Gagal memuat data: "+(e.message||e));setSt("Gagal memuat","var(--A)")}view=1;$("v1").style.display="";$("v2").style.display="none";$("t1").className="p";$("t2").className="";render();subscribe();autoSync()}
+async function enter(user){$("login").style.display="none";$("app").style.display="";$("who").textContent="👤 "+(user&&user.email||"");setSt("Memuat…");try{await loadAll();setSt("Tersambung ✓")}catch(e){toast("Gagal memuat data: "+(e.message||e));setSt("Gagal memuat","var(--A)")}view=1;$("v1").style.display="";$("v2").style.display="none";$("v3").style.display="none";$("t1").className="p";$("t2").className="";$("t3").className="";render();subscribe();autoSync()}
 $("lg").onclick=async()=>{if(!sb)return;const em=$("le").value.trim(),pw=$("lp").value;if(!em||!pw){$("lm").textContent="Isi email dan password.";return}$("lm").textContent="Masuk…";const {data,error}=await sb.auth.signInWithPassword({email:em,password:pw});if(error){$("lm").textContent="Email atau password salah.";return}$("lp").value="";await enter(data.user)};
 $("lp").onkeydown=e=>{if(e.key==="Enter")$("lg").click()};
 $("lo").onclick=async()=>{if(sb)await sb.auth.signOut();showLogin("")};
