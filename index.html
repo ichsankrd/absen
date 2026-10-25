@@ -429,6 +429,45 @@ function viewSlip(d){
   const sl=t=>t.replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"");
   $("svp").onclick=()=>drawSlip(d).toBlob(bl=>dlBlob(bl,"Slip-Gaji-"+sl(d.nama)+"-"+sl(d.bln)+".png"),"image/png");
   $("svf").onclick=()=>{try{window.print()}catch(e){}}}
+const scriptId=u=>{const m=/\/macros\/s\/([\w-]+)\//.exec(u||"");return m?m[1]:""};
+const execUrl=id=>"https://script.google.com/macros/s/"+id+"/exec";
+const arrD=a=>({nama:a[0],jab:a[1],bln:a[2],per:a[3],rows:a[4],total:a[5],kata:a[6],tgl:a[7]});
+async function viewForm(id){
+  document.title="Slip Gaji Relawan";
+  $("login").style.display="none";$("app").style.display="none";
+  const v=$("sv");v.style.display="";
+  v.innerHTML=`<div class="card" style="max-width:420px;margin:24px auto"><p style="margin:0 0 2px;font-weight:700;text-align:center;color:#1f3a5f;letter-spacing:.12em">SLIP GAJI RELAWAN</p><p style="margin:0 0 14px;text-align:center;font-size:12px;color:var(--mut)">SPPG Karangduak Kabupaten Sumenep</p><div class="fld"><label for="vn">Nama</label><select id="vn" class="f"><option value="">Memuat daftar nama\u2026</option></select></div><div class="fld"><label for="vp">PIN (4 digit terakhir nomor WA Anda)</label><input id="vp" class="f" type="password" inputmode="numeric" autocomplete="off"></div><button class="p" id="vg" style="width:100%">Lihat Slip</button><div id="vm" style="margin-top:10px;font-size:13px;color:var(--mut);text-align:center"></div></div>`;
+  const vm=t=>{$("vm").textContent=t};
+  try{const r=await fetch(execUrl(id)+"?action=names"),j=await r.json();if(!j.ok)throw new Error(j.error||"gagal");
+    $("vn").innerHTML='<option value="">\u2014 pilih nama \u2014</option>'+j.names.map(n=>`<option>${esc(n)}</option>`).join("");
+    if(!j.names.length)vm("Slip belum diterbitkan.")}
+  catch(e){$("vn").innerHTML='<option value="">(gagal memuat)</option>';vm("Gagal memuat daftar nama. Coba muat ulang halaman.")}
+  $("vg").onclick=async()=>{const nama=$("vn").value,pin=$("vp").value.trim();
+    if(!nama){vm("Pilih nama dulu.");return}if(!pin){vm("Isi PIN dulu.");return}
+    vm("Memeriksa\u2026");$("vg").disabled=true;
+    try{const r=await fetch(execUrl(id),{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"slip",nama,pin})}),j=await r.json();
+      if(!j.ok){vm(j.error||"PIN salah");$("vg").disabled=false;return}
+      viewSlip(arrD(j.data))}
+    catch(e){vm("Gagal terhubung. Coba lagi.");$("vg").disabled=false}}}
+async function terbitkan(){
+  const u=$("shu").value.trim(),id=scriptId(u),m=$("sst"),bx='<div style="border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:10px;font-size:13px">';
+  if(!id){toast("Isi dulu link web app Google Apps Script.");return}
+  let key="";try{key=new URL(u).searchParams.get("key")||""}catch(e){}
+  if(!key){toast("Tambahkan ?key=KUNCI di akhir link Apps Script.");return}
+  if(!baseUrl()){toast("Isi dulu alamat aplikasi untuk link slip.");return}
+  const slips=Object.values(slipData).map(d=>({nama:d.nama,data:[d.nama,d.jab,d.bln,d.per,d.rows,d.total,d.kata,d.tgl]}));
+  if(!slips.length){toast("Tidak ada slip.");return}
+  const bulan=slips[0].data[2];
+  m.innerHTML=bx+"Menerbitkan "+slips.length+" slip ke Google Sheet\u2026</div>";
+  try{const r=await fetch(execUrl(id),{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key,bulan,slips})}),j=await r.json();
+    if(!j.ok)throw new Error(j.error||"ditolak");
+    const link=baseUrl()+"#v="+id;
+    const msg=["*Slip Gaji "+bulan+"*","SPPG Karangduak Kabupaten Sumenep","","Silakan buka link berikut, pilih nama Anda, lalu masukkan PIN (4 digit terakhir nomor WA Anda):",link,"","Setelah itu slip bisa diunduh sebagai PDF atau gambar."].join("\n");
+    const sk=(j.skipped||[]);
+    m.innerHTML=bx+`\u2705 <b>${j.count}</b> slip diterbitkan.`+(sk.length?` <span style="color:var(--mut)">Tidak diterbitkan karena belum ada nomor WA/PIN di Sheet (${sk.length}): ${esc(sk.join(", "))}</span>`:"")+`<div style="margin:8px 0;padding:8px;background:var(--bg);border-radius:8px;white-space:pre-wrap;word-break:break-word">${esc(msg)}</div><div class="row"><button class="p" id="pbs">\ud83d\udcac Bagikan ke WhatsApp</button><button id="pbc">\ud83d\udccb Salin Pengumuman</button></div></div>`;
+    $("pbs").onclick=()=>window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(msg),"_blank");
+    $("pbc").onclick=async()=>{try{await navigator.clipboard.writeText(msg);toast("Pengumuman disalin.",true)}catch(e){toast("Gagal menyalin.")}}}
+  catch(e){m.innerHTML=bx+"Gagal menerbitkan: "+esc(e.message||String(e))+"</div>"}}
 async function getSheet(){const u=$("shu").value.trim(),m=$("shmsg"),bx='font-size:13px;margin-bottom:10px;';
   if(!/^https:\/\/script\.google\.com\//.test(u)){toast("Isi link web app Google Apps Script dulu.");return}
   m.style.cssText=bx;m.textContent="Mengambil data dari Google Sheet…";
@@ -463,8 +502,8 @@ function slip(){
 <div class="tb">Terbilang: ${esc(kata)}</div>
 <div class="sg"><div></div><div>Sumenep, ${tgl}<br>Akuntan<br><img src="${SIG.src}" alt="" style="display:block;height:54px;width:auto;margin:-2px auto -6px"><b>ANISA CINDY WIJAYA S.Ak</b></div></div>${wa}</div>`};
   const w=$("slw");
-  w.innerHTML=`<div class="row noprint" style="justify-content:space-between;margin-bottom:10px"><b>🧾 Slip Gaji · ${items.length} slip</b><span class="row"><button id="slall" class="p">📨 Kirim Teks ke Semua</button><button id="slprint">🖨 Cetak Slip</button><button id="slx">Tutup</button></span></div><div class="row noprint" style="margin-bottom:10px"><input class="f" id="bu" placeholder="Alamat aplikasi untuk link slip" style="flex:1;min-width:200px"><label style="font-size:13px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="fl"> Sertakan rincian lengkap</label></div><div class="row noprint" style="margin-bottom:10px"><input class="f" id="shu" placeholder="Link Google Sheet (Apps Script web app)" style="flex:1;min-width:200px"><button id="shget">⬇ Ambil Nomor</button><button id="shnm">📋 Salin Nama</button></div><div id="shmsg" class="noprint"></div><div id="slst" class="noprint"></div><div class="slg">${items.length?items.map(one).join(""):'<div class="empty">Tidak ada relawan.</div>'}</div>`;
-  w.style.display="";$("slall").onclick=startQ;paintQ();
+  w.innerHTML=`<div class="row noprint" style="justify-content:space-between;margin-bottom:10px"><b>🧾 Slip Gaji · ${items.length} slip</b><span class="row"><button id="slpub" class="p">☁ Terbitkan Slip</button><button id="slq">💬 Satu per Satu</button><button id="slprint">🖨 Cetak Slip</button><button id="slx">Tutup</button></span></div><div class="row noprint" style="margin-bottom:10px"><input class="f" id="bu" placeholder="Alamat aplikasi untuk link slip" style="flex:1;min-width:200px"><label style="font-size:13px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="fl"> Sertakan rincian lengkap</label></div><div class="row noprint" style="margin-bottom:10px"><input class="f" id="shu" placeholder="Link Google Sheet (Apps Script web app)" style="flex:1;min-width:200px"><button id="shget">⬇ Ambil Nomor</button><button id="shnm">📋 Salin Nama</button></div><div id="shmsg" class="noprint"></div><div id="sst" class="noprint"></div><div id="slst" class="noprint"></div><div class="slg">${items.length?items.map(one).join(""):'<div class="empty">Tidak ada relawan.</div>'}</div>`;
+  w.style.display="";$("slpub").onclick=terbitkan;$("slq").onclick=startQ;paintQ();
   try{$("shu").value=localStorage.getItem("sheetUrl")||""}catch(e){}
   $("shu").oninput=()=>{try{localStorage.setItem("sheetUrl",$("shu").value.trim())}catch(e){}};
   $("shget").onclick=getSheet;
@@ -489,6 +528,7 @@ $("lp").onkeydown=e=>{if(e.key==="Enter")$("lg").click()};
 $("lo").onclick=async()=>{if(sb)await sb.auth.signOut();showLogin("")};
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&sb&&$("app").style.display!=="none"&&Date.now()-lastLoad>60000)loadAll().then(refresh).catch(()=>{})});
 (async function boot(){
+  if(/^#v=[\w-]+$/.test(location.hash)){viewForm(location.hash.slice(3));return}
   if(/^#s=/.test(location.hash)){try{const d=await decSlip(location.hash);if(d){viewSlip(d);return}}catch(e){}document.body.innerHTML='<p style="padding:24px;text-align:center">Link slip tidak valid atau rusak.</p>';return}
   if(!window.supabase||SUPABASE_URL.indexOf("ISI_")===0){showLogin("Belum dikonfigurasi: isi SUPABASE_URL dan SUPABASE_KEY di bagian atas script file ini (lihat PANDUAN).");return}
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
